@@ -1,0 +1,21 @@
+name: bossfight
+description: Undertale-based Plugin
+main: com.rschao.Plugin
+version: 2.0
+api-version: 1.21
+authors:
+  - RSChao
+contributors: 
+  - D3lta7
+  - kinektos
+permissions:
+  gaster.items:
+    default: op
+  gaster.admin:
+    default: op
+
+depend:
+  - CommandAPI
+  - UltimateAdvancementAPI
+  - ShowdownSMP
+load: POSTWORLD
