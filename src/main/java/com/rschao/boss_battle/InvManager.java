@@ -51,7 +51,7 @@ public class InvManager {
         try{
             for(Path p: findFoldersContaining(new File(Plugin.getPlugin(Plugin.class).getDataFolder(), "/kits/").toPath(), "inv.yml")){
                 Bukkit.getLogger().info("Deleting extra file in " + p.toString());
-                File file = p.resolve("kits.yml").toFile();
+                File file = p.resolve("inv.yml").toFile();
                 file.delete();
             }
         } catch(IOException e){
