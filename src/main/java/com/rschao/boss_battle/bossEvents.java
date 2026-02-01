@@ -106,10 +106,9 @@ public class bossEvents implements Listener {
         Player killer = player.getKiller();
         FileConfiguration config = getConfig();
         if(!player.equals(daboss)){
-            killCount++;
-            if(killCount >= bossPlayers.size()){
+            bossPlayers.remove(player);
+            if(bossPlayers.isEmpty()){
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " permission unset gaster.boss");
-                killCount = 0;
                 killer.sendMessage("You have defeated all enemies");
             }
         }
@@ -201,6 +200,9 @@ public class bossEvents implements Listener {
 
             bossActive = false;
             bossPhase = 0;
+            daboss = null;
+            bossPlayers.clear();
+            killCount = 0;
         }
     }
 
@@ -257,15 +259,11 @@ public class bossEvents implements Listener {
         // Get all online players
         Player[] players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
         Location loc = new Location(world, bossX, bossY, bossZ);
-        for(Player p:Bukkit.getOnlinePlayers()){
-            if(p.hasPermission("gaster.boss")){
-                loc = p.getLocation();
-                break;
-            }
-        }
+        loc = daboss.getLocation();
         Player[] temp = new Player[players.length];
             for(int i = 0; i < players.length; i++){
                 Player p = players[i];
+                if(p.equals(daboss)) continue;
                 if(p.getLocation().toVector().distance(loc.toVector()) <= 50){
                     temp[i] = p;
                 }

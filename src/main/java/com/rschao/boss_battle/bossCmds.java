@@ -40,7 +40,6 @@ public class bossCmds {
                 });
                 bossEvents.bossActive = true;
                 bossEvents.bossPhase++;
-                bossEvents.killCount = 0;
                 bossEvents.daboss = target;
                 BossStartEvent ev = new BossStartEvent(bossEvents.configName, 1, target, bossEvents.getArrayPlayers());
                 Bukkit.getServer().getPluginManager().callEvent(ev);
