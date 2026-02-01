@@ -41,9 +41,11 @@ public class bossCmds {
                 bossEvents.bossActive = true;
                 bossEvents.bossPhase++;
                 bossEvents.daboss = target;
+                bossEvents.daboss.sendMessage("...");
                 BossStartEvent ev = new BossStartEvent(bossEvents.configName, 1, target, bossEvents.getArrayPlayers());
                 Bukkit.getServer().getPluginManager().callEvent(ev);
 
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " permission set gaster.boss true");
 
                 bossEvents.executeBossPhase(bossEvents.bossPhase);
                 player.sendMessage("...");
