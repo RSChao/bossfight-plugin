@@ -21,6 +21,10 @@
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
 		
 		<repository>
         <id>fren_gor</id>
@@ -68,11 +72,10 @@
         </dependency>
 
         <dependency>
-            <groupId>com.rschao.plugins.showdowncore</groupId>
+            <groupId>com.github.RSChao</groupId>
             <artifactId>showdowncore</artifactId>
-            <version>1.0</version>
-            <scope>system</scope>
-            <systemPath>D:\Users\RSChao\Desktop\Programas para PC\paper-upgrade\plugins\showdowncore-1.0.jar</systemPath>
+            <version>master-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
 
