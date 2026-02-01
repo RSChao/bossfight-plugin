@@ -38,7 +38,7 @@ public class bossEvents implements Listener {
     public static boolean bossActive;
     public static int maxPhase;
     public static String configName;
-    static Player[] bossPlayers = null;
+    static List<Player> bossPlayers = new ArrayList<>();
     static BossPlayerInfo bossinfo;
     public static int killCount = 0;
     public static Player daboss;
@@ -54,6 +54,12 @@ public class bossEvents implements Listener {
             }
         }
         return YamlConfiguration.loadConfiguration(configFile);
+    }
+
+    public static Player[] getArrayPlayers(){
+        Player[] bossPlayers = new Player[bossEvents.bossPlayers.size()];
+        bossEvents.bossPlayers.toArray(bossPlayers);
+        return bossPlayers;
     }
 
     @EventHandler (priority = EventPriority.HIGHEST)
@@ -88,7 +94,7 @@ public class bossEvents implements Listener {
                 @Override
                 public void run() {
                     executeBossPhase(bossPhase);
-                    BossChangeEvent event = new BossChangeEvent(configName, bossPhase, player, bossPlayers);
+                    BossChangeEvent event = new BossChangeEvent(configName, bossPhase, player, getArrayPlayers());
                     Bukkit.getServer().getPluginManager().callEvent(event);
                 }
             }, 2);
@@ -99,9 +105,9 @@ public class bossEvents implements Listener {
         Player player = ev.getEntity();
         Player killer = player.getKiller();
         FileConfiguration config = getConfig();
-        if(!player.hasPermission("gaster.boss")){
+        if(!player.equals(daboss)){
             killCount++;
-            if(killCount >= bossPlayers.length){
+            if(killCount >= bossPlayers.size()){
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " permission unset gaster.boss");
                 killCount = 0;
                 killer.sendMessage("You have defeated all enemies");
@@ -121,7 +127,7 @@ public class bossEvents implements Listener {
                 bossPhase = 0;
                 bossActive = false;
                 Location loc = new Location(tpWorld, x, y, z);
-                for(Player p: Bukkit.getOnlinePlayers()){
+                for(Player p: bossPlayers){
                     if(p.getUniqueId().equals(player.getUniqueId())) continue;
 
                     p.teleport(loc);
@@ -135,7 +141,7 @@ public class bossEvents implements Listener {
             }
 
             //call the BossEndEvent
-            BossEndEvent event = new BossEndEvent(configName, bossPhase, player, bossPlayers);
+            BossEndEvent event = new BossEndEvent(configName, bossPhase, player, getArrayPlayers());
             Bukkit.getServer().getPluginManager().callEvent(event);
             String rewardName = configName.replace('/', '.');
             player.sendMessage(rewardName);
@@ -197,7 +203,17 @@ public class bossEvents implements Listener {
             bossPhase = 0;
         }
     }
+
+    public static Player getBossPlayer(){
+        for(Player p : Bukkit.getOnlinePlayers()){
+            if(p.hasPermission("gaster.boss")){
+                return p;
+            }
+        }
+        return null;
+    }
     public static void executeBossPhase(int phase) {
+        daboss = getBossPlayer();
         FileConfiguration config = getConfig();
         String world = config.getString("boss.world." + phase + ".name");
 
@@ -226,14 +242,7 @@ public class bossEvents implements Listener {
                 });
             }
         }, 5);
-        Player player = null;
-        for(Player p : Bukkit.getOnlinePlayers()){
-            if(p.hasPermission("gaster.boss")){
-                player = p;
-                break;
-            }
-        }
-        BossChangeEvent event = new BossChangeEvent(configName, bossPhase, player, bossPlayers);
+        BossChangeEvent event = new BossChangeEvent(configName, bossPhase, daboss, getArrayPlayers());
         Bukkit.getServer().getPluginManager().callEvent(event);
     }
 
@@ -261,23 +270,21 @@ public class bossEvents implements Listener {
                     temp[i] = p;
                 }
             }
-            if (bossPhase < 2) bossPlayers = temp.clone();
-        if(bossPlayers == null || bossPlayers.length <= 1){
+            if (bossPhase < 2) bossPlayers = new ArrayList<>(List.of(temp));
+        if(bossPlayers == null || bossPlayers.size() <= 1){
             bossActive = false;
             bossPhase = 0;
-            killCount = 0;
             return;
         }
-        killCount = 0;
 
         // Calculate the coordinates of the players
-        int numPlayers = bossPlayers.length;
+        int numPlayers = bossPlayers.size();
         double angleIncrement = 2 * Math.PI / numPlayers;
         double radius = 5.0; // Distance from the boss
         for (int i = 0; i < numPlayers; i++) {
-            Player player = bossPlayers[i];
+            Player player = bossPlayers.get(i);
             if(player == null) continue;
-            if (!player.hasPermission("gaster.boss")) {
+            if (!player.equals(daboss)) {
                 double angle = i * angleIncrement;
                 double x = bossLocation.getX() + radius * Math.cos(angle);
                 double z = bossLocation.getZ() + radius * Math.sin(angle);
@@ -309,7 +316,7 @@ public class bossEvents implements Listener {
     static void PhaseDialogue(int phase, FileConfiguration config){
         if(!config.contains("boss.world." + phase + ".dialogue")) return;
         if(config.get("boss.world." + phase + ".dialogue") instanceof String){
-            AudioSelector.PlayBossAudio(config.getString("boss.world." + phase + ".dialogue"), bossPlayers);
+            AudioSelector.PlayBossAudio(config.getString("boss.world." + phase + ".dialogue"), getArrayPlayers());
         }
         else {
             for(Player p : Bukkit.getOnlinePlayers()){
@@ -325,7 +332,7 @@ public class bossEvents implements Listener {
         }
     }
     static void bossMusic(String music){
-        AudioSelector.PlayBossAudio(music, bossPlayers);
+        AudioSelector.PlayBossAudio(music, getArrayPlayers());
     }
     @EventHandler
     void onBossStart(BossStartEvent ev){

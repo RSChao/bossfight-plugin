@@ -17,6 +17,9 @@ import dev.jorel.commandapi.arguments.EntitySelectorArgument.OnePlayer;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class bossCmds {
     public static CommandAPICommand Load(){
         CommandAPICommand cmd = new CommandAPICommand("boss")
@@ -39,7 +42,7 @@ public class bossCmds {
                 bossEvents.bossPhase++;
                 bossEvents.killCount = 0;
                 bossEvents.daboss = target;
-                BossStartEvent ev = new BossStartEvent(bossEvents.configName, 1, target, bossEvents.bossPlayers);
+                BossStartEvent ev = new BossStartEvent(bossEvents.configName, 1, target, bossEvents.getArrayPlayers());
                 Bukkit.getServer().getPluginManager().callEvent(ev);
 
 
@@ -59,7 +62,7 @@ public class bossCmds {
                 
                 bossEvents.bossPhase++;
                 bossEvents.executeBossPhase(bossEvents.bossPhase);
-                BossChangeEvent event = new BossChangeEvent(bossEvents.configName, bossEvents.bossPhase, player, bossEvents.bossPlayers);
+                BossChangeEvent event = new BossChangeEvent(bossEvents.configName, bossEvents.bossPhase, player, bossEvents.getArrayPlayers());
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 
             });
@@ -176,7 +179,7 @@ public class bossCmds {
             .executesPlayer((Player player, CommandArguments args) -> {
                 bossEvents.bossPhase = 0;
                 bossEvents.bossActive = false;
-                BossEndEvent event = new BossEndEvent(bossEvents.configName, bossEvents.bossPhase, player, bossEvents.bossPlayers);
+                BossEndEvent event = new BossEndEvent(bossEvents.configName, bossEvents.bossPhase, player, bossEvents.getArrayPlayers());
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 for(Player p : Bukkit.getOnlinePlayers()){
                     //remove the gaster.boss permission from every online player
