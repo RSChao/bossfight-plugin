@@ -1,6 +1,7 @@
 package com.rschao.boss_battle;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import com.rschao.Plugin;
@@ -47,6 +48,26 @@ public class bossCmds {
 
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + player.getName() + " permission set gaster.boss true");
 
+                List<Player> nearby = new ArrayList<>();
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (p == null) continue;
+                    if (!p.isOnline()) continue;
+                    if (p.getUniqueId().equals(bossEvents.daboss.getUniqueId())) continue;
+
+                    Location pLoc = p.getLocation();
+                    Location dabossLoc = bossEvents.daboss.getLocation();
+                    if (!pLoc.getWorld().equals(dabossLoc.getWorld())) continue;
+
+                    // usar distanceSquared para evitar sqrt innecesario
+                    if (pLoc.distanceSquared(dabossLoc) <= 50.0 * 50.0) {
+                        nearby.add(p);
+                    }
+                }
+
+                bossEvents.bossPlayers.addAll(nearby);
+
+                // eliminar posibles nulls por seguridad
+                bossEvents.bossPlayers.removeIf(java.util.Objects::isNull);
                 bossEvents.executeBossPhase(bossEvents.bossPhase);
                 player.sendMessage("...");
                 

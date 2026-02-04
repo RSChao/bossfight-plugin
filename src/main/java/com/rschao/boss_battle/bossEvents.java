@@ -262,60 +262,70 @@ public class bossEvents implements Listener {
     }
 
     static void TeleportToBoss(String worldName, double bossX, double bossY, double bossZ, FileConfiguration config) {
-        World world = Bukkit.getWorld(worldName);
-        if (world == null) {
-            return; // Mundo no encontrado
-        }
-        if (daboss == null) {
-            Bukkit.getLogger().warning("TeleportToBoss llamado pero daboss es null. Abortando teletransporte.");
+        try {
+
+            World world = Bukkit.getWorld(worldName);
+            if (world == null) {
+                Bukkit.getLogger().warning("TeleportToBoss: world '" + worldName + "' no encontrada.");
+                return;
+            }
+
+            if (daboss == null || !daboss.isOnline()) {
+                Bukkit.getLogger().warning("TeleportToBoss: daboss es null o no está en línea. Abortando.");
+                bossActive = false;
+                bossPhase = 0;
+                return;
+            }
+
+            Location bossLocation = new Location(world, bossX, bossY, bossZ);
+
+
+            if (bossPlayers.isEmpty()) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user " + daboss.getName() + " permission unset gaster.boss");
+                bossActive = false;
+                bossPhase = 0;
+                return;
+            }
+
+            int numPlayers = bossPlayers.size();
+            double angleIncrement = 2 * Math.PI / Math.max(1, numPlayers);
+            double radius = 5.0;
+
+            for (int i = 0; i < numPlayers; i++) {
+                final Player player = bossPlayers.get(i);
+                if (player == null || !player.isOnline()) continue;
+
+                final Location playerTarget;
+                if (!player.getUniqueId().equals(daboss.getUniqueId())) {
+                    double angle = i * angleIncrement;
+                    double x = bossLocation.getX() + radius * Math.cos(angle);
+                    double z = bossLocation.getZ() + radius * Math.sin(angle);
+                    // conservar yaw/pitch del jugador si existe
+                    Location cur = player.getLocation();
+                    float yaw = (cur != null) ? cur.getYaw() : 0f;
+                    float pitch = (cur != null) ? cur.getPitch() : 0f;
+                    playerTarget = new Location(world, x, bossLocation.getY(), z, yaw, pitch);
+                } else {
+                    playerTarget = bossLocation.clone();
+                }
+
+                // ejecutar teleport en el hilo principal
+                Bukkit.getScheduler().runTask(Plugin.getPlugin(Plugin.class), () -> {
+                    try {
+                        if (player.isOnline()) {
+                            player.teleport(playerTarget);
+                        }
+                    } catch (Exception e) {
+                        java.util.logging.Logger.getLogger("bossEvents").log(java.util.logging.Level.WARNING, "Error al teleportar jugador", e);
+                    }
+                });
+            }
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger("bossEvents").log(java.util.logging.Level.WARNING, "Excepción en TeleportToBoss", ex);
             bossActive = false;
             bossPhase = 0;
-            return;
-        }
-        // Ubicación del boss
-        Location bossLocation = new Location(world, bossX, bossY, bossZ);
-
-        // Construir lista de jugadores alrededor del boss (sin nulls)
-        List<Player> nearby = new ArrayList<>();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            if (p.equals(daboss)) continue;
-            // usar la ubicación del daboss para la distancia
-            if (p.getLocation().toVector().distance(daboss.getLocation().toVector()) <= 50) {
-                nearby.add(p);
-            }
-        }
-
-        if (bossPhase < 2) {
-            bossPlayers = new ArrayList<>(nearby);
-        }
-
-        if (bossPlayers == null || bossPlayers.size() <= 0) {
-            bossActive = false;
-            bossPhase = 0;
-            return;
-        }
-
-        // Calcular posiciones alrededor del boss
-        int numPlayers = bossPlayers.size();
-        double angleIncrement = 2 * Math.PI / Math.max(1, numPlayers);
-        double radius = 5.0;
-        for (int i = 0; i < numPlayers; i++) {
-            Player player = bossPlayers.get(i);
-            if (player == null) continue;
-            if (!player.equals(daboss)) {
-                double angle = i * angleIncrement;
-                double x = bossLocation.getX() + radius * Math.cos(angle);
-                double z = bossLocation.getZ() + radius * Math.sin(angle);
-                Location playerLocation = new Location(world, x, bossLocation.getY(), z);
-                player.teleport(playerLocation);
-                player.teleport(playerLocation);
-            } else {
-                player.teleport(bossLocation);
-                player.teleport(bossLocation);
-            }
         }
     }
-
     static void PhaseDialogue(int phase, FileConfiguration config){
         if(!config.contains("boss.world." + phase + ".dialogue")) return;
         if(config.get("boss.world." + phase + ".dialogue") instanceof String){
