@@ -84,8 +84,10 @@ public class BossInstance {
         Location loc = BossAPI.getLocation(config, currentPhase);
         if(loc == null) return;
         BossStartEvent ev = new BossStartEvent(key, 1, bosses.getFirst(), fighters.toArray(new Player[0]));
-        Bukkit.getServer().getPluginManager().callEvent(ev);
-        BossChangeEvent event = new BossChangeEvent(key, 1, bosses.getFirst(), getFighters().toArray(new Player[0]));
+        if(getCurrentPhase() == 1){
+            Bukkit.getServer().getPluginManager().callEvent(ev);
+        }
+        BossChangeEvent event = new BossChangeEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (ev.isCancelled() || event.isCancelled()) return;
         teleportToLocation(loc);
