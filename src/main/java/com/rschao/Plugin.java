@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.rschao.advs.tab0.*;
 import com.rschao.boss_battle.InvManager;
+import com.rschao.boss_battle.api.BossListener;
 import com.rschao.commands.*;
 import com.rschao.enchants.*;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.EasyEnchantManager;
@@ -108,15 +109,14 @@ public class Plugin extends JavaPlugin implements Listener
     BossMusic.register();
   }
   void StartBossCmds(){
-    bossCmds.Load().register("gaster");
-    bossCmds.NextPhase().register("gaster");
     bossCmds.SaveInventory().register("gaster");
     bossCmds.LoadInventory().register("gaster");
     bossCmds.DeleteInventory().register("gaster");
+    com.rschao.boss_battle.api.BossCMDs.Load().register("gaster");
+    com.rschao.boss_battle.api.BossCMDs.NextPhase().register("gaster");
     reload.Load().register("gaster");
     bossCmds.ResetPhase().register("gaster");
     bossCmds.ToggleSoulDrop().register("gaster");
-    boss_settings_cmds.bossSettings().register("gaster");
     boss_settings_cmds.SetBossValue().register("gaster");
     CheckFlag.load().register("gaster");
     EvalScore.Load().register("gaster");
@@ -166,6 +166,6 @@ public class Plugin extends JavaPlugin implements Listener
   public static void EnableCHeart(){
     Bukkit.getPluginManager().registerEvents(new weaponEvents(), Plugin.getPlugin(Plugin.class));
 
-    Bukkit.getPluginManager().registerEvents(new bossEvents(), Plugin.getPlugin(Plugin.class));
+    Bukkit.getPluginManager().registerEvents(new BossListener(), Plugin.getPlugin(Plugin.class));
   }
 }

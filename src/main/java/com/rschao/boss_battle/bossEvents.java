@@ -42,7 +42,7 @@ public class bossEvents implements Listener {
     static BossPlayerInfo bossinfo;
     public static int killCount = 0;
     public static Player daboss;
-//todo: fix boss bugs and Xv1 issues
+
     public static FileConfiguration getConfig() {
         configName = Plugin.getPlugin(Plugin.class).getConfig().getString("boss.event.name");
         File configFile = new File(Plugin.getPlugin(Plugin.class).getDataFolder() + "/bosses/", configName + ".yml");

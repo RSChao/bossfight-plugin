@@ -1,5 +1,7 @@
 package com.rschao.events.definitions;
 
+import com.rschao.boss_battle.api.BossHandler;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -12,12 +14,14 @@ public class BossEndEvent extends Event implements Cancellable {
     public boolean isCancelled;
     public Player boss;
     public Player[] bossPlayers;
+    public FileConfiguration config;
     public BossEndEvent(String bossName, int phase, Player boss, Player[] bossPlayers) {
         this.bossName = bossName;
         this.phase = phase;
         this.boss = boss;
         this.isCancelled = false;
         this.bossPlayers = bossPlayers;
+        config = BossHandler.loadBoss(bossName);
     }
     public HandlerList getHandlers() {
         return HANDLERS_LIST;
