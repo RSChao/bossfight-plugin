@@ -54,7 +54,7 @@ public class BossAPI {
 
     public static List<String> getAddon(FileConfiguration config, int phase, String addon){
         ConfigurationSection s = BossHandler.getPhaseData(config, phase);
-        if(s == null || !s.contains(addon)) return null;
+        if(s == null || !s.contains(addon)) return new ArrayList<>();
         return s.getStringList(addon);
     }
 

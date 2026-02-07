@@ -101,12 +101,12 @@ public class BossInstance {
         if(music != null) AudioSelector.PlayBossAudio(music, bosses.toArray(new Player[0]));
         if(music != null) AudioSelector.PlayBossAudio(music, fighters.toArray(new Player[0]));
         List<String> soulStrings = BossAPI.getAddon(config, currentPhase, "souls");
-        if(soulStrings != null && soulStrings.size() >= 2){
-            int soul1 = Integer.parseInt(soulStrings.get(0));
-            int soul2 = Integer.parseInt(soulStrings.get(1));
-            for(Player p: bosses){
-                soulEvents.setSouls(p, soul1, soul2);
-            }
+        if(soulStrings.isEmpty()) soulStrings = List.of("-1", "-1");
+        int soul1 = Integer.parseInt(soulStrings.get(0));
+        int soul2 = (soulStrings.size() > 1) ? Integer.parseInt(soulStrings.get(1)) : -1;
+
+        for(Player p: bosses){
+            soulEvents.setSouls(p, soul1, soul2);
         }
         List<String> dialogue = BossAPI.getDialogue(config, currentPhase);
         if(dialogue != null && !dialogue.isEmpty()){

@@ -31,6 +31,7 @@ public class Boss_origin extends BaseAdvancement implements HiddenVisibility {
   public Boss_origin(Advancement parent, float x, float y) {
     super(KEY.getKey(), new AdvancementDisplay(item, "Hero of Showdown", AdvancementFrameType.CHALLENGE, true, true, x, y , "Defeat the God of Oblivion", "and save all worlds", "", "§6Rewards:", "§6-New rank Showdown Hero", "§6-????"), parent, 1);
     this.registerEvent(BossEndEvent.class, (ev) -> {
+      Bukkit.getLogger().info("BossEndEvent fired for boss "+ev.getBossName());
       if(ev.getBossName().equals("s2finale.origin_chao")){
         for(Player p : ev.getBossPlayers()){
           incrementProgression(p);

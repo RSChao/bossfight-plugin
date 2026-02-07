@@ -43,6 +43,7 @@ public class BossListener implements Listener {
             if(bi.containsBoss(p)){
                 bi.removeBoss(p);
                 if(bi.getBosses().isEmpty()){
+                    bi.getBosses().add(p);
                     bi.end();
                     e.getDrops().clear();
                 }
