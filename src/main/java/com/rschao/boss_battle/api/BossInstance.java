@@ -8,6 +8,7 @@ import com.rschao.boss_battle.InvManager;
 import com.rschao.events.definitions.BossChangeEvent;
 import com.rschao.events.definitions.BossEndEvent;
 import com.rschao.events.definitions.BossStartEvent;
+import com.rschao.events.soulEvents;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.registry.ScriptRegistry;
 import org.bukkit.Bukkit;
@@ -97,7 +98,14 @@ public class BossInstance {
         String music = BossAPI.getMusic(config, currentPhase);
         if(music != null) AudioSelector.PlayBossAudio(music, bosses.toArray(new Player[0]));
         if(music != null) AudioSelector.PlayBossAudio(music, fighters.toArray(new Player[0]));
-
+        List<String> soulStrings = BossAPI.getAddon(config, currentPhase, "souls");
+        if(soulStrings != null && soulStrings.size() >= 2){
+            int soul1 = Integer.parseInt(soulStrings.get(0));
+            int soul2 = Integer.parseInt(soulStrings.get(1));
+            for(Player p: bosses){
+                soulEvents.setSouls(p, soul1, soul2);
+            }
+        }
         List<String> dialogue = BossAPI.getDialogue(config, currentPhase);
         if(dialogue != null && !dialogue.isEmpty()){
             new BukkitRunnable() {
