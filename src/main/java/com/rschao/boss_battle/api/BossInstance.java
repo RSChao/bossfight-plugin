@@ -134,9 +134,6 @@ public class BossInstance {
 
     public void advancePhase() {
         currentPhase++;
-        BossChangeEvent event = new BossChangeEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if(event.isCancelled()) return;
         start();
     }
 
