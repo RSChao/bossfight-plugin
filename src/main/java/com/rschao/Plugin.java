@@ -120,6 +120,7 @@ public class Plugin extends JavaPlugin implements Listener
     boss_settings_cmds.SetBossValue().register("gaster");
     CheckFlag.load().register("gaster");
     EvalScore.Load().register("gaster");
+    boss_settings_cmds.setDrops().register("gaster");
     PlayTheme.register();
   }
 

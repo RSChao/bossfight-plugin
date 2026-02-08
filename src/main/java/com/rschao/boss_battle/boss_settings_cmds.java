@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rschao.boss_battle.api.BossListener;
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -299,6 +300,27 @@ public class boss_settings_cmds {
                 }
                 player.sendMessage("§a" + args.get("key") + " has been set to " + args.get("value"));
             });
+        return cmd;
+    }
+
+    public static CommandAPICommand setDrops(){
+        CommandAPICommand cmd = new CommandAPICommand("setdrops")
+            .withPermission("gaster.admin")
+            .withHelp("/setdrops <boss> <phase>", "Set the drops for a boss phase")
+            .withArguments(new StringArgument("boss").replaceSuggestions(ArgumentSuggestions.strings(info -> reloadList().toArray(new String[0]))))
+                .executesPlayer((Player player, CommandArguments args) -> {
+                    String bossName = String.valueOf(args.get("boss"));
+                    if (bossName == null || bossName.equals("unknown")) {
+                        player.sendMessage("§cNo boss selected.");
+                        return;
+                    }
+                    DropsManager.openDropsInventory(player, bossName);
+                    BossListener.bossName = bossName;
+                    player.sendMessage("§aDrops inventory opened. Close when done.");
+                })
+                .executesConsole((ConsoleCommandSender sender, CommandArguments args) -> {
+                    sender.sendMessage("Only players can use this command.");
+                });
         return cmd;
     }
 }

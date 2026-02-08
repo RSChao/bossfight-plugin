@@ -4,6 +4,7 @@ package com.rschao.boss_battle.api;
 import com.rschao.Plugin;
 import com.rschao.api.audio.AudioSelector;
 import com.rschao.boss_battle.BossAPI;
+import com.rschao.boss_battle.DropsManager;
 import com.rschao.boss_battle.InvManager;
 import com.rschao.events.definitions.BossChangeEvent;
 import com.rschao.events.definitions.BossEndEvent;
@@ -76,7 +77,22 @@ public class BossInstance {
         Bukkit.getServer().getPluginManager().callEvent(ev);
         if(ev.isCancelled()) return;
         rewards.addAll(Arrays.stream(bosses.getFirst().getInventory().getContents()).toList());
-        handleDrops(bosses.getFirst(), rewards);
+
+        // Cargar drops configurados
+        List<ItemStack> configuredDrops = DropsManager.loadDropsFromConfig(key);
+        if (!configuredDrops.isEmpty()) {
+            // Crear shulker box con los drops y dárselo a cada fighter
+            for (Player fighter : fighters) {
+                ItemStack shulkerBox = DropsManager.createShulkerBoxWithDrops(configuredDrops);
+                Map<Integer, ItemStack> leftover = fighter.getInventory().addItem(shulkerBox);
+                for (ItemStack l : leftover.values()) {
+                    fighter.getWorld().dropItemNaturally(fighter.getLocation(), l);
+                }
+            }
+        } else {
+            // Si no hay drops configurados, usar el sistema de rewards normal
+            handleDrops(bosses.getFirst(), rewards);
+        }
     }
 
     public void start() {

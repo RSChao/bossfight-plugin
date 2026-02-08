@@ -11,14 +11,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Map;
 
+import com.rschao.boss_battle.DropsManager;
+
 public class BossListener implements Listener {
-    static Map<Player, Inventory> rewardsInventories;
+    public static String bossName;
 
     @EventHandler (priority = org.bukkit.event.EventPriority.HIGHEST)
     public void onBossDamage(EntityDamageEvent e){
@@ -56,8 +59,17 @@ public class BossListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        if (!(e.getPlayer() instanceof Player player)) return;
 
+        String title = e.getView().getTitle();
+        if (!title.equals("§6Boss Drops")) return;
 
-
-
+        String bossName = BossListener.bossName;
+        if (bossName != null && !bossName.equals("unknown")) {
+            DropsManager.saveDropsToConfig(bossName, e.getInventory());
+            player.sendMessage("§aBoss drops saved!");
+        }
+    }
 }
