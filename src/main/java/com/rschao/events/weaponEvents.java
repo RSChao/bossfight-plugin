@@ -49,6 +49,7 @@ public class weaponEvents implements Listener{
     public void damage(EntityDamageEvent ev){
         if(!(ev.getEntity() instanceof Player)) return;
         Player p = (Player) ev.getEntity();
+        if(!p.getInventory().getItemInOffHand().hasItemMeta()) return;
         if (((p.getHealth() - ev.getFinalDamage()) <= 0) && p.getInventory().getItemInOffHand().getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER))
         {
             ItemStack item = p.getInventory().getItemInOffHand();

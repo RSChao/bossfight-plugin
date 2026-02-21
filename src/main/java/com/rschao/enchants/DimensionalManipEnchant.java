@@ -13,6 +13,7 @@ import com.rschao.plugins.techniqueAPI.tech.Technique;
 import com.rschao.plugins.techniqueAPI.tech.context.TechniqueContext;
 import com.rschao.plugins.techniqueAPI.tech.feedback.hotbarMessage;
 import com.rschao.plugins.techniqueAPI.tech.register.TechRegistry;
+import com.rschao.plugins.techniqueAPI.tech.register.TechniqueNameManager;
 import com.rschao.plugins.techniqueAPI.tech.util.PlayerTechniqueManager;
 import de.slikey.effectlib.Effect;
 import org.bukkit.*;
@@ -39,7 +40,8 @@ public class DimensionalManipEnchant extends EasyEnchant {
 
         if(!item.hasItemMeta()) return;
         if(!hasEnchantment(item)) return;
-
+        if(event.getItem() == null) return;
+        if(!event.getItem().hasItemMeta()) return;
         if(event.getItem().getItemMeta().getPersistentDataContainer().has(weapons.CSKey) && event.getItem().getItemMeta().getPersistentDataContainer().has(weapons.DSKey)){
 
             int soul1 = soulEvents.GetSoulN(event.getPlayer());
@@ -57,7 +59,7 @@ public class DimensionalManipEnchant extends EasyEnchant {
 
                     PlayerTechniqueManager.setCurrentTechnique(p.getUniqueId(), groupId, (techIndex + 1) % TechRegistry.getAllTechniques(groupId).size());
                     techIndex = PlayerTechniqueManager.getCurrentTechnique(p.getUniqueId(), groupId);
-                    p.sendMessage("You have switched to technique: " + TechRegistry.getAllTechniques(groupId).get(techIndex).getDisplayName());
+                    p.sendMessage("You have switched to technique: " + TechniqueNameManager.getDisplayName(p, TechRegistry.getAllTechniques(groupId).get(techIndex)));
                 }
             }
         }

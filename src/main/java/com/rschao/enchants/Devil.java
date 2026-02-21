@@ -10,6 +10,7 @@ import com.rschao.plugins.techniqueAPI.tech.Technique;
 import com.rschao.plugins.techniqueAPI.tech.context.TechniqueContext;
 import com.rschao.plugins.techniqueAPI.tech.feedback.hotbarMessage;
 import com.rschao.plugins.techniqueAPI.tech.register.TechRegistry;
+import com.rschao.plugins.techniqueAPI.tech.register.TechniqueNameManager;
 import com.rschao.plugins.techniqueAPI.tech.util.PlayerTechniqueManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -37,7 +38,6 @@ public class Devil extends EasyEnchant {
     @EventHandler
     void onMagic(PlayerInteractEvent event) {
         ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-        if(item == null) return;
 
         if(!item.hasItemMeta()) return;
         if(!hasEnchantment(item)) return;
@@ -54,7 +54,7 @@ public class Devil extends EasyEnchant {
             else if(event.getAction().toString().contains("RIGHT")){
                 PlayerTechniqueManager.setCurrentTechnique(p.getUniqueId(), groupId, (techIndex + 1) % TechRegistry.getAllTechniques(groupId).size());
                 techIndex = PlayerTechniqueManager.getCurrentTechnique(p.getUniqueId(), groupId);
-                p.sendMessage("You have switched to technique: " + TechRegistry.getAllTechniques(groupId).get(techIndex).getDisplayName());
+                p.sendMessage("You have switched to technique: " + TechniqueNameManager.getDisplayName(p, TechRegistry.getAllTechniques(groupId).get(techIndex)));
             }
 
         }
