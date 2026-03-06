@@ -52,6 +52,13 @@ public class BossAPI {
         return new Location(Bukkit.getWorld(world), x, y, z);
     }
 
+    public static String getRewardCommand(FileConfiguration config){
+        ConfigurationSection s = config.getConfigurationSection("boss");
+        assert s != null;
+        if(!s.contains("reward")) return null;
+        return s.getString("reward");
+    }
+
     public static List<String> getAddon(FileConfiguration config, int phase, String addon){
         ConfigurationSection s = BossHandler.getPhaseData(config, phase);
         if(s == null || !s.contains(addon)) return new ArrayList<>();

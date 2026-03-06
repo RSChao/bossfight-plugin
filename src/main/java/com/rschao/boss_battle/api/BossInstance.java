@@ -71,12 +71,19 @@ public class BossInstance {
         if(victoryLoc != null) {
             for (Player p : fighters) {
                 p.teleport(victoryLoc);
+                p.teleport(victoryLoc);
             }
         }
         BossEndEvent ev = new BossEndEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
         Bukkit.getServer().getPluginManager().callEvent(ev);
         if(ev.isCancelled()) return;
         rewards.addAll(Arrays.stream(bosses.getFirst().getInventory().getContents()).toList());
+        String rewardCMD = BossAPI.getRewardCommand(config);
+        if(rewardCMD != null){
+            for (Player p : fighters) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), rewardCMD.replace("%player%", p.getName()));
+            }
+        }
 
         // Cargar drops configurados
         List<ItemStack> configuredDrops = DropsManager.loadDropsFromConfig(key);
