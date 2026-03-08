@@ -114,6 +114,7 @@ public class Plugin extends JavaPlugin implements Listener
     bossCmds.DeleteInventory().register("gaster");
     com.rschao.boss_battle.api.BossCMDs.Load().register("gaster");
     com.rschao.boss_battle.api.BossCMDs.NextPhase().register("gaster");
+    com.rschao.boss_battle.api.BossCMDs.Reset().register("gaster");
     reload.Load().register("gaster");
     bossCmds.ResetPhase().register("gaster");
     bossCmds.ToggleSoulDrop().register("gaster");

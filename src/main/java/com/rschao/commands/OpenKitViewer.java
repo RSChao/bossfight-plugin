@@ -1,6 +1,8 @@
 package com.rschao.commands;
 
 import com.rschao.Plugin;
+import com.rschao.boss_battle.BossAPI;
+import com.rschao.boss_battle.api.BossHandler;
 import com.rschao.boss_battle.bossEvents;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.IntegerArgument;
@@ -36,7 +38,7 @@ public class OpenKitViewer implements Listener {
         CommandAPICommand cmd = new CommandAPICommand("viewkit")
                 .withPermission("gaster.items")
                 // Sobrecarga por fase (entero)
-                .withArguments(new IntegerArgument("phase")).executes((CommandSender sender, CommandArguments args) -> {
+                .withArguments(new StringArgument("boss"), new IntegerArgument("phase")).executes((CommandSender sender, CommandArguments args) -> {
                     if(!(sender instanceof Player)){
                         sender.sendMessage("Este comando solo puede ser ejecutado por un jugador.");
                         return;
@@ -44,8 +46,10 @@ public class OpenKitViewer implements Listener {
                     Player p = (Player) sender;
                     int phase = (Integer) args.get("phase");
                     // Obtener clave de kit desde el archivo del boss
-                    FileConfiguration bossCfg = bossEvents.getConfig();
-                    String kitKey = bossCfg.getString("boss.world." + phase + ".kit");
+                    String str = (String) args.get("boss");
+                    assert str != null;
+                    FileConfiguration bossCfg = BossHandler.loadBoss(str);
+                    String kitKey = BossAPI.getKit(bossCfg, phase);
                     if(kitKey == null || kitKey.isEmpty()){
                         p.sendMessage("No se encontró un kit para la fase " + phase);
                         return;
