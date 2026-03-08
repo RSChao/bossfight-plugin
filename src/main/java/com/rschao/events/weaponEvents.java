@@ -28,7 +28,7 @@ import com.rschao.items.weapons;
 public class weaponEvents implements Listener{
 
     public static void ImplementCore(){
-        ShowdownScript popPlayer = new ShowdownScript<Void>((Object[] args) -> {
+        ShowdownScript<Void> popPlayer = new ShowdownScript<>((Object[] args) -> {
             Player p = (Player) args[0];
             for(PotionEffect effect : p.getActivePotionEffects()){
                 p.removePotionEffect(effect.getType());
