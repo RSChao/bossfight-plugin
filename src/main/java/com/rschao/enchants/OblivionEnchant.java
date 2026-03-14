@@ -38,27 +38,31 @@ public class OblivionEnchant extends EasyEnchant {
             if(player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
             if(!hasEnchantment(player.getInventory().getItemInMainHand())) return;
             if(rng < 3){
-                ItemStack[] array = damaged.getInventory().getContents();
-                int random = (new Random()).nextInt(0, array.length-1);
-                if(GetBlackListItem(array[random])){
-                    if(array[random].getType().equals(Material.AIR)) random = (new Random()).nextInt(0, array.length-1);
-                    if(array[random].getType().equals(Material.AIR)){
-                        player.sendMessage("But no memories were forgotten");
-                    }
-                    TextComponent txt = getTextComponent(array, random);
-                    player.sendMessage("Your enemy's items fell into oblivion:");
-                    player.spigot().sendMessage(txt);
-                    damaged.sendMessage("Your items fell into oblivion");
-                    damaged.spigot().sendMessage(txt);
-
-
-                    array[random].setAmount(0);
-                    damaged.getInventory().setContents(array);
-                }
-                else{
-                    player.sendMessage("But no memories were forgotten");
-                }
+                oblivion(player, damaged);
             }
+        }
+    }
+
+    public static void oblivion(Player player, Player damaged) {
+        ItemStack[] array = damaged.getInventory().getContents();
+        int random = (new Random()).nextInt(0, array.length-1);
+        if(GetBlackListItem(array[random])){
+            if(array[random].getType().equals(Material.AIR)) random = (new Random()).nextInt(0, array.length-1);
+            if(array[random].getType().equals(Material.AIR)){
+                player.sendMessage("But no memories were forgotten");
+            }
+            TextComponent txt = getTextComponent(array, random);
+            player.sendMessage("Your enemy's items fell into oblivion:");
+            player.spigot().sendMessage(txt);
+            damaged.sendMessage("Your items fell into oblivion");
+            damaged.spigot().sendMessage(txt);
+
+
+            array[random].setAmount(0);
+            damaged.getInventory().setContents(array);
+        }
+        else{
+            player.sendMessage("But no memories were forgotten");
         }
     }
 
@@ -75,7 +79,7 @@ public class OblivionEnchant extends EasyEnchant {
         return txt;
     }
 
-    boolean GetBlackListItem(ItemStack item){
+    static boolean GetBlackListItem(ItemStack item){
         boolean bool = false;
         if(item == null) return bool;
         if(item.getItemMeta() == null) return bool;
