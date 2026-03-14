@@ -160,7 +160,6 @@ public class Magician {
         // Teletransportar a todos los jugadores en un radio de 50 bloques (excepto al usuario) y marcarlos como atrapados
         double radius = 50.0;
         List<Player> nearbyPlayers = player.getWorld().getPlayers().stream()
-                .filter(p -> !p.getUniqueId().equals(player.getUniqueId()))
                 .filter(p -> p.getLocation().distance(player.getLocation()) <= radius)
                 .toList();
 
@@ -184,7 +183,7 @@ public class Magician {
         UUID pid = player.getUniqueId();
         boolean wasTrapped = false;
         Location targetPrev = null;
-
+        List<Player> freedPlayers = new ArrayList<>();
         // Buscar todos los breaches que contengan a este jugador
         for (Map.Entry<UUID, Breach> e : breaches.entrySet()) {
             Breach b = e.getValue();
@@ -197,6 +196,9 @@ public class Magician {
                 b.releasePlayer(pid);
                 for(UUID p: b.trappedPlayers){
                     b.releasePlayer(p);
+                    if(b.owner.equals(pid)){
+                        freedPlayers.add(Bukkit.getPlayer(p));
+                    }
                 }
                 // Si el breach quedó vacío, removerlo
                 if (b.trappedPlayers.isEmpty()) {
@@ -209,6 +211,9 @@ public class Magician {
             // Teletransportar al jugador a su ubicación previa si está disponible, si no al spawn del mundo
             if (targetPrev != null) {
                 player.teleport(targetPrev);
+                for (Player p : freedPlayers) {
+                    p.teleport(targetPrev);
+                }
             } else {
                 player.teleport(player.getWorld().getSpawnLocation());
             }

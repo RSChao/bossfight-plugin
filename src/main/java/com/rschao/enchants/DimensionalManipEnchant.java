@@ -102,18 +102,52 @@ public class DimensionalManipEnchant extends EasyEnchant {
         // Si entra o sale de modo espectador
         if (oldMode != GameMode.SPECTATOR && newMode == GameMode.SPECTATOR) {
             // Entrando a espectador
-            player.playSound(player.getLocation(), "dimentio_tp_2", 1.0F, 1.0F);
+            player.getLocation().getWorld().playSound(player.getLocation(), "dimentio_tp_2", 1.0F, 1.0F);
             effect.start();
             stopEffects(effect);
         } else if (oldMode == GameMode.SPECTATOR && newMode != GameMode.SPECTATOR) {
             // Saliendo de espectador
-            player.playSound(player.getLocation(), "dimentio_tp_1", 1.0F, 1.0F);
+            player.getLocation().getWorld().playSound(player.getLocation(), "dimentio_tp_1", 1.0F, 1.0F);
             effect.start();
             stopEffects(effect);
 
         }
 
     }
+
+    @EventHandler
+    void onTP(PlayerTeleportEvent ev){
+        ItemStack item = ev.getPlayer().getInventory().getItem(EquipmentSlot.HEAD);
+        if(item == null) return;
+        if(!item.hasItemMeta()) return;
+        if(!hasEnchantment(item)) return;
+
+        Player player = ev.getPlayer();
+        if(player.getGameMode() == GameMode.SPECTATOR) return;
+        Location oldLocation = ev.getFrom();
+        Location newLocation = ev.getTo();
+
+
+        SphereFlashEffect effect = new SphereFlashEffect(Plugin.getEffectManager());
+        effect.setLocation(oldLocation);
+        effect.particle = Particle.DUST;
+        effect.color = Color.PURPLE;
+        SphereFlashEffect effect2 = new SphereFlashEffect(Plugin.getEffectManager());
+        effect2.setLocation(newLocation);
+        effect.particle = Particle.DUST;
+        effect.color = Color.PURPLE;
+
+
+        player.getLocation().getWorld().playSound(oldLocation, "dimentio_tp_2", 1.0F, 1.0F);
+        effect.start();
+        stopEffects(effect);
+
+
+        player.getLocation().getWorld().playSound(newLocation, "dimentio_tp_1", 1.0F, 1.0F);
+        effect2.start();
+        stopEffects(effect2);
+    }
+
     void stopEffects(Effect effect) {
         Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(Plugin.class), () -> {
             if (effect != null) {
