@@ -61,6 +61,7 @@ public class weaponEvents implements Listener{
             p.sendMessage("But it refused");
             int t = getTest(p.getInventory().getItemInOffHand(), weapons.CHKey);
             t += 1;
+            p.sendMessage((t) + "/" + (3*level));
             setTest(p.getInventory().getItemInOffHand(), t, weapons.CHKey);
             popPlayerLimit(p, t, 3*level);
             if(t >=3*level){

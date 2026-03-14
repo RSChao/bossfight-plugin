@@ -78,6 +78,7 @@ public class Plugin extends JavaPlugin implements Listener
     enchants.add(new WitherEnchant());
     enchants.add(new DimensionalManipEnchant());
     enchants.add(new Devil());
+    enchants.add(new Determined());
     enchants.add(new com.rschao.enchants.Choco());
     for(EasyEnchant e: enchants){
         EasyEnchantManager.addEasyEnchant(e);
