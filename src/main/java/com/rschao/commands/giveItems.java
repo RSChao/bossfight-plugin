@@ -32,7 +32,7 @@ public class giveItems {
     }
     public static CommandAPICommand Special(){
         CommandAPICommand cmd = new CommandAPICommand("special")
-        .withSubcommands(Darkness(), SevenSouls(), Void(), Neutral(), Chaos(), PurityH())
+        .withSubcommands(Darkness(), SevenSouls(), Void(), Neutral(), Chaos(), PurityH(), Divine())
         .executesPlayer((Player player, CommandArguments args) -> {
             player.sendMessage("select a type");
         });

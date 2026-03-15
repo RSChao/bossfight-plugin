@@ -635,6 +635,6 @@ public class Items {
         Bukkit.getServer().addRecipe(recipe);
     }
     static void soul_divine() {
-        soul_Animosity = SoulData.soul(DiSKey, 6, "Animosity", "soul_divine", true);
+        DivinitySoul = SoulData.soul(DiSKey, 6, "Animosity", "soul_divine", true);
     }
 }

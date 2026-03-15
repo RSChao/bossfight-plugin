@@ -3,6 +3,8 @@ package com.rschao.boss_battle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import com.rschao.Plugin;
 import com.rschao.events.soulEvents;
@@ -18,6 +20,11 @@ import dev.jorel.commandapi.arguments.EntitySelectorArgument.OnePlayer;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
+import java.util.stream.Stream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -231,6 +238,64 @@ public class bossCmds {
                 Plugin.getPlugin(Plugin.class).reloadConfig();
                 player.sendMessage("Soul dropping is now " + (soulEvents.drop ? "active" : "inactive"));
             });
+        return cmd;
+    }
+
+    public static CommandAPICommand reloadList(){
+        CommandAPICommand cmd = new CommandAPICommand("reloadlist")
+                .withPermission("gaster.admin")
+                .executes((sender, args) ->{
+                    // Directorio base de bosses
+                    File bossesDir = new File(Plugin.getPlugin(Plugin.class).getDataFolder(), "bosses");
+                    if(!bossesDir.exists()) bossesDir.mkdirs();
+
+                    File file = new File(bossesDir, "general.yml");
+                    FileConfiguration config = new YamlConfiguration();
+                    try {
+                        if(!file.exists()) {
+                            file.createNewFile();
+                        }
+                        config.load(file);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    // Reconstruir la lista desde cero para reflejar exactamente el contenido del disco
+                    List<String> names = new ArrayList<>();
+
+                    Path base = bossesDir.toPath();
+                    String folderToExclude = "template";
+                    String fileToExclude = "general.yml";
+
+                    // Recorrer recursivamente con Files.walk
+                    try (Stream<Path> stream = Files.walk(base)) {
+                        stream.filter(Files::isRegularFile).forEach(path -> {
+                            String fname = path.getFileName().toString();
+                            // Excluir el archivo general.yml
+                            if (fname.equalsIgnoreCase(fileToExclude)) return;
+                            // Excluir cualquier ruta que contenga la carpeta 'template'
+                            String pathStr = path.toString();
+                            if (pathStr.contains(File.separator + folderToExclude + File.separator) || pathStr.endsWith(File.separator + folderToExclude) || pathStr.contains(folderToExclude + File.separator)) return;
+
+                            // Guardar la ruta relativa desde /bosses/ usando '/' como separador
+                            String relative = base.relativize(path).toString().replace('\\', '/');
+                            relative = relative.replace(".yml", "");
+                            if (!names.contains(relative)) names.add(relative);
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Ordenar las rutas para determinismo
+                    java.util.Collections.sort(names);
+
+                    config.set("bosses.names", names);
+                    try {
+                        config.save(file);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
         return cmd;
     }
 }

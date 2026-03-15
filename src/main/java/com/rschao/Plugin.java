@@ -124,6 +124,7 @@ public class Plugin extends JavaPlugin implements Listener
     EvalScore.Load().register("gaster");
     boss_settings_cmds.setDrops().register("gaster");
     PlayTheme.register();
+    bossCmds.reloadList().register("gaster");
   }
 
   public void onDisable()
