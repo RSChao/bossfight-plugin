@@ -77,8 +77,9 @@ public enum SoulType {
         opposites.put(26, new Integer[]{10, 15}); // Despair is strong against Empathy and Sincerity
         opposites.put(27, new Integer[]{4, 15, 0}); // Animosity is strong against Bravery and Sincerity
         opposites.put(-5, new Integer[]{}); // Neutral has no strengths or weaknesses
-        opposites.put(30, new Integer[]{19}); // Neutral has no strengths or weaknesses
+        opposites.put(30, new Integer[]{}); // Neutral has no strengths or weaknesses
         opposites.put(66, new Integer[]{19}); // Neutral has no strengths or weaknesses
+        opposites.put(100, new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 30, 66}); // Void is strong against all
     }
 
     SoulType(String key, String displayName, int id, int tier) {
