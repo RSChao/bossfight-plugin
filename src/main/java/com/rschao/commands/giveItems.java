@@ -510,6 +510,13 @@ public class giveItems {
                 });
         return cmd;
     }
+    public static CommandAPICommand Divine(){
+        CommandAPICommand cmd = new CommandAPICommand("divinity")
+                .executesPlayer((Player player, CommandArguments args) -> {
+                    player.getInventory().addItem(Items.DivinitySoul);
+                });
+        return cmd;
+    }
     public static CommandAPICommand SevenHands(){
         CommandAPICommand cmd = new CommandAPICommand("sevenhands")
         .executesPlayer((Player player, CommandArguments args) -> {
