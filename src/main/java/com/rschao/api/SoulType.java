@@ -38,7 +38,7 @@ public enum SoulType {
     PUREHEART("purity_heart", ChatColor.RED + "P" + ChatColor.DARK_PURPLE + "u" + ChatColor.DARK_BLUE + "r" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "t" + ChatColor.AQUA + "y" + ChatColor.GREEN + " Hea" + ChatColor.WHITE + "rt", 30, 8),
     CHAOSHEART("chaos_heart", ChatColor.GRAY + "Chaos Heart", 66, 7),
     NEUTRAL("neutral", ChatColor.BOLD + "Neutral", -5, 5),
-    DIVINE("divine", ChatColor.RED + "D" + ChatColor.DARK_PURPLE + "i" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + "i" + ChatColor.GREEN + "t" + ChatColor.WHITE + "ty", 100, 6);
+    DIVINE("divine", ChatColor.RED + "D" + ChatColor.DARK_PURPLE + "i" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + "i" + ChatColor.GREEN + "t" + ChatColor.WHITE + "y", 100, 6);
 
     private final String key;
     private final String displayName;
@@ -77,8 +77,8 @@ public enum SoulType {
         opposites.put(26, new Integer[]{10, 15}); // Despair is strong against Empathy and Sincerity
         opposites.put(27, new Integer[]{4, 15, 0}); // Animosity is strong against Bravery and Sincerity
         opposites.put(-5, new Integer[]{}); // Neutral has no strengths or weaknesses
-        opposites.put(30, new Integer[]{}); // Neutral has no strengths or weaknesses
-        opposites.put(66, new Integer[]{19}); // Neutral has no strengths or weaknesses
+        opposites.put(30, new Integer[]{66, 19}); // Purity Heart is strong against Chaos Heart and Void
+        opposites.put(66, new Integer[]{19}); // Chaos Heart is strong against Void
         opposites.put(100, new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 30, 66}); // Void is strong against all
     }
 
