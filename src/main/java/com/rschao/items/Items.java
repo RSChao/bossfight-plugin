@@ -96,6 +96,8 @@ public class Items {
     public static NamespacedKey DeSKey;
     public static ItemStack soul_Animosity;
     public static NamespacedKey AnSKey;
+    public static ItemStack DivinitySoul;
+    public static NamespacedKey DiSKey;
     static void Keys(){
         SwordKey = new NamespacedKey("gaster", "geno_knife");
         XKKey = new NamespacedKey("gaster", "x_knife");
@@ -132,6 +134,7 @@ public class Items {
         MaSKey = new NamespacedKey("soul", "malice");
         DeSKey = new NamespacedKey("soul", "despair");
         AnSKey = new NamespacedKey("soul", "animosity");
+        DiSKey = new NamespacedKey("soul", "divine");
     }
     public static void Init(){
         DeterminationCrystal();
@@ -187,6 +190,7 @@ public class Items {
         soul_Malice();
         soul_Despair();
         soul_Animosity();
+        soul_divine();
     }
 
     public static void addEnchants(){
@@ -516,6 +520,7 @@ public class Items {
             case -5: return soul_Neutral;
             case 30: return PurityHeart;
             case 66: return ChaosHeart;
+            case 100: return DivinitySoul;
             default: return null;
         }
     }
@@ -628,5 +633,8 @@ public class Items {
         recipe.addIngredient(new ExactChoice(SoulContainer));
         recipe.addIngredient(new ExactChoice(soul_Love));
         Bukkit.getServer().addRecipe(recipe);
+    }
+    static void soul_divine() {
+        soul_Animosity = SoulData.soul(DiSKey, 6, "Animosity", "soul_divine", true);
     }
 }
