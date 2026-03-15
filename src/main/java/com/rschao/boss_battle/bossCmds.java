@@ -279,6 +279,7 @@ public class bossCmds {
 
                             // Guardar la ruta relativa desde /bosses/ usando '/' como separador
                             String relative = base.relativize(path).toString().replace('\\', '/');
+                            relative = relative.replace('/', '.');
                             relative = relative.replace(".yml", "");
                             if (!names.contains(relative)) names.add(relative);
                         });
