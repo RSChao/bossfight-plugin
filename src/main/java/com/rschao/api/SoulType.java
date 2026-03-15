@@ -37,7 +37,8 @@ public enum SoulType {
     VOID("void", ChatColor.GRAY + "Void", 19, 5),
     PUREHEART("purity_heart", ChatColor.RED + "P" + ChatColor.DARK_PURPLE + "u" + ChatColor.DARK_BLUE + "r" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "t" + ChatColor.AQUA + "y" + ChatColor.GREEN + " Hea" + ChatColor.WHITE + "rt", 30, 8),
     CHAOSHEART("chaos_heart", ChatColor.GRAY + "Chaos Heart", 66, 7),
-    NEUTRAL("neutral", ChatColor.BOLD + "Neutral", -5, 5);
+    NEUTRAL("neutral", ChatColor.BOLD + "Neutral", -5, 5),
+    DIVINE("divine", ChatColor.RED + "D" + ChatColor.DARK_PURPLE + "i" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + "i" + ChatColor.GREEN + "t" + ChatColor.WHITE + "ty", 100, 6);
 
     private final String key;
     private final String displayName;

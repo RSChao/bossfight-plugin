@@ -36,6 +36,9 @@ public class SoulData {
             case 5:
                 meta.setItemName("Superior Human Soul");
                 break;
+            case 6:
+                meta.setItemName("Divine Soul");
+                break;
             case 8:
                 meta.setItemName("Corazón de la Pureza");
                 break;
