@@ -4,6 +4,7 @@ package com.rschao.items;
 import java.util.List;
 import java.util.ArrayList;
 
+import com.rschao.api.SoulType;
 import com.rschao.enchants.GenoEnchant;
 import com.rschao.enchants.GlitchEnchant;
 import com.rschao.events.events;
@@ -635,6 +636,6 @@ public class Items {
         Bukkit.getServer().addRecipe(recipe);
     }
     static void soul_divine() {
-        DivinitySoul = SoulData.soul(DiSKey, 6, "Animosity", "soul_divine", true);
+        DivinitySoul = SoulData.soul(DiSKey, 6, SoulType.DIVINE.getDisplayName(), "soul_divine", true);
     }
 }

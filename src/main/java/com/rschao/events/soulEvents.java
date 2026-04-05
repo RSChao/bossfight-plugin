@@ -133,9 +133,9 @@ public class soulEvents implements Listener {
             opposite = GetSoulDifferences(DsoulN, VsoulN) || GetSoulDifferences(DsoulN, VSecondSoulN) || GetSoulDifferences(DSecondSoulN, VsoulN) || GetSoulDifferences(DSecondSoulN, VSecondSoulN);
             if(isSoulless(v)) opposite = true;
             if(opposite || (GetSoulN(v) == -1)) {
-                ev.setDamage(ev.getDamage() + 5);
+                ev.setDamage(ev.getDamage() + 5* SoulType.getDamageMultiplier(GetSoulN(d)));
                 if (allowSecondSoul && DSecondSoulN != -1) {
-                    ev.setDamage(ev.getDamage() + 5);
+                    ev.setDamage(ev.getDamage() + 5* SoulType.getDamageMultiplier(GetSecondSoulN(d)));
                 }
                 //show message to players, ensuring that it wont repeat to the same player for 3 minutes
                 if(showMessage){

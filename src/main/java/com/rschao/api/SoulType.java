@@ -7,43 +7,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum SoulType {
-    DETERMINATION("determination", ChatColor.RED + "Determination", 0, 1),
-    PERSEVERANCE("perseverance", ChatColor.DARK_PURPLE + "Perseverance", 1, 1),
-    INTEGRITY("integrity", ChatColor.DARK_BLUE + "Integrity", 2, 1),
-    JUSTICE("justice", ChatColor.YELLOW + "Justice", 3, 1),
-    BRAVERY("bravery", ChatColor.of(new Color(255, 140, 0)) + "Bravery", 4, 1),
-    PATIENCE("patience", ChatColor.AQUA + "Patience", 5, 1),
-    KINDNESS("kindness", ChatColor.GREEN + "Kindness", 6, 1),
-    HATE("hate", ChatColor.BLACK + "Hate", 7, 3),
-    COMPASSION("compassion", ChatColor.of(new Color(168, 230, 207)) + "Compassion", 8, 2),
-    AFFECTION("affection", ChatColor.of(new Color(255, 171, 171)) + "Affection", 9, 2),
-    EMPATHY("empathy", ChatColor.of(new Color(230, 230, 250)) + "Empathy", 10, 2),
-    LOVE("love", ChatColor.of(new Color(220, 20, 60)) + "Love", 11, 4),
-    EMPTINESS("emptiness", ChatColor.of(new Color(128, 128, 128)) + "Emptiness", 12, 3),
-    HOPE("hope", ChatColor.of(new Color(135, 206, 235)) + "Hope", 13, 4),
-    PURITY("purity", ChatColor.of(new Color(255, 255, 240)) + "Purity", 14, 4),
-    SINCERITY("sincerity", ChatColor.of(new Color(240, 255, 255)) + "Sincerity", 15, 2),
-    CONFLICT("conflict", ChatColor.of(new Color(255, 228, 225)) + "Conflict", 16, 3),
-    DARKNESS("darkness", ChatColor.BLACK + "Darkness", 17, 5),
-    SEVEN("seven", ChatColor.RED + "S" + ChatColor.DARK_PURPLE + "e" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "e" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + " sou" + ChatColor.GREEN + "ls", 18, 5),
-    AUDACITY("audacity", ChatColor.of(new Color(255, 222, 173)) + "Audacity", 20, 2),
-    FORTITUDE("fortitude", ChatColor.of(new Color(173, 216, 230)) + "Fortitude", 21, 2),
-    GUIDANCE("guidance", ChatColor.of(new Color(144, 238, 144)) + "Guidance", 22, 2),
-    INSANITY("insanity", ChatColor.of(new Color(255, 182, 193)) + "Insanity", 23, 3),
-    IRRESOLUTION("irresolution", ChatColor.of(new Color(221, 160, 221)) + "Irresolution", 24, 3),
-    MALICE("malice", ChatColor.of(new Color(255, 160, 122)) + "Malice", 25, 3),
-    DESPAIR("despair", ChatColor.of(new Color(176, 224, 230)) + "Despair", 26, 3),
-    ANIMOSITY("animosity", ChatColor.of(new Color(250, 128, 114)) + "Animosity", 27, 4),
-    VOID("void", ChatColor.GRAY + "Void", 19, 5),
-    PUREHEART("purity_heart", ChatColor.RED + "P" + ChatColor.DARK_PURPLE + "u" + ChatColor.DARK_BLUE + "r" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "t" + ChatColor.AQUA + "y" + ChatColor.GREEN + " Hea" + ChatColor.WHITE + "rt", 30, 8),
-    CHAOSHEART("chaos_heart", ChatColor.GRAY + "Chaos Heart", 66, 7),
-    NEUTRAL("neutral", ChatColor.BOLD + "Neutral", -5, 5),
-    DIVINE("divine", ChatColor.RED + "D" + ChatColor.DARK_PURPLE + "i" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + "i" + ChatColor.GREEN + "t" + ChatColor.WHITE + "y", 100, 6);
+    DETERMINATION("determination", ChatColor.RED + "Determination", 0, 1, 1),
+    PERSEVERANCE("perseverance", ChatColor.DARK_PURPLE + "Perseverance", 1, 1, 1),
+    INTEGRITY("integrity", ChatColor.DARK_BLUE + "Integrity", 2, 1, 1),
+    JUSTICE("justice", ChatColor.YELLOW + "Justice", 3, 1, 1),
+    BRAVERY("bravery", ChatColor.of(new Color(255, 140, 0)) + "Bravery", 4, 1, 1),
+    PATIENCE("patience", ChatColor.AQUA + "Patience", 5, 1, 1),
+    KINDNESS("kindness", ChatColor.GREEN + "Kindness", 6, 1, 1),
+    HATE("hate", ChatColor.BLACK + "Hate", 7, 3, 0.8),
+    COMPASSION("compassion", ChatColor.of(new Color(168, 230, 207)) + "Compassion", 8, 2, 1.5),
+    AFFECTION("affection", ChatColor.of(new Color(255, 171, 171)) + "Affection", 9, 2, 1.5),
+    EMPATHY("empathy", ChatColor.of(new Color(230, 230, 250)) + "Empathy", 10, 2, 1.5),
+    LOVE("love", ChatColor.of(new Color(220, 20, 60)) + "Love", 11, 4, 2),
+    EMPTINESS("emptiness", ChatColor.of(new Color(128, 128, 128)) + "Emptiness", 12, 3, 2),
+    HOPE("hope", ChatColor.of(new Color(135, 206, 235)) + "Hope", 13, 4, 1.7),
+    PURITY("purity", ChatColor.of(new Color(255, 255, 240)) + "Purity", 14, 4, 1),
+    SINCERITY("sincerity", ChatColor.of(new Color(240, 255, 255)) + "Sincerity", 15, 2, 1),
+    CONFLICT("conflict", ChatColor.of(new Color(255, 228, 225)) + "Conflict", 16, 3, 1.4),
+    DARKNESS("darkness", ChatColor.BLACK + "Darkness", 17, 5, 0.5),
+    SEVEN("seven", ChatColor.RED + "S" + ChatColor.DARK_PURPLE + "e" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "e" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + " sou" + ChatColor.GREEN + "ls", 18, 5, 1),
+    AUDACITY("audacity", ChatColor.of(new Color(255, 222, 173)) + "Audacity", 20, 2, 1),
+    FORTITUDE("fortitude", ChatColor.of(new Color(173, 216, 230)) + "Fortitude", 21, 2, 1),
+    GUIDANCE("guidance", ChatColor.of(new Color(144, 238, 144)) + "Guidance", 22, 2, 1),
+    INSANITY("insanity", ChatColor.of(new Color(255, 182, 193)) + "Insanity", 23, 3, 3),
+    IRRESOLUTION("irresolution", ChatColor.of(new Color(221, 160, 221)) + "Irresolution", 24, 3, 3),
+    MALICE("malice", ChatColor.of(new Color(255, 160, 122)) + "Malice", 25, 3, 3),
+    DESPAIR("despair", ChatColor.of(new Color(176, 224, 230)) + "Despair", 26, 3, 3),
+    ANIMOSITY("animosity", ChatColor.of(new Color(250, 128, 114)) + "Animosity", 27, 4, 3),
+    VOID("void", ChatColor.GRAY + "Void", 19, 5, 3.1),
+    PUREHEART("purity_heart", ChatColor.RED + "P" + ChatColor.DARK_PURPLE + "u" + ChatColor.DARK_BLUE + "r" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "t" + ChatColor.AQUA + "y" + ChatColor.GREEN + " Hea" + ChatColor.WHITE + "rt", 30, 8, 1),
+    CHAOSHEART("chaos_heart", ChatColor.GRAY + "Chaos Heart", 66, 7, 1),
+    NEUTRAL("neutral", ChatColor.BOLD + "Neutral", -5, 5, 0),
+    DIVINE("divine", ChatColor.RED + "D" + ChatColor.DARK_PURPLE + "i" + ChatColor.DARK_BLUE + "v" + ChatColor.YELLOW + "i" + ChatColor.of(new Color(255, 140, 0)) + "n" + ChatColor.AQUA + "i" + ChatColor.GREEN + "t" + ChatColor.WHITE + "y", 100, 6, 4);
 
     private final String key;
     private final String displayName;
     private final int id;
     private final int tier;
+    private final double damage;
 
     public static final Map<Integer, Integer[]> opposites = new HashMap<>();
 
@@ -82,11 +83,12 @@ public enum SoulType {
         opposites.put(100, new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 30, 66}); // Void is strong against all
     }
 
-    SoulType(String key, String displayName, int id, int tier) {
+    SoulType(String key, String displayName, int id, int tier, double damage) {
         this.key = key;
         this.displayName = displayName;
         this.id = id;
         this.tier = tier;
+        this.damage = damage;
     }
 
     public String getKey() {
@@ -136,5 +138,9 @@ public enum SoulType {
     }
     public static int getSoulAmount(){
         return values().length;
+    }
+
+    public static double getDamageMultiplier(int soulId) {
+        return values()[soulId].damage;
     }
 }

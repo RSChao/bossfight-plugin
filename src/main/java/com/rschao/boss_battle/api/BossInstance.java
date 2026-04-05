@@ -12,6 +12,8 @@ import com.rschao.events.definitions.BossStartEvent;
 import com.rschao.events.soulEvents;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.registry.ScriptRegistry;
+import com.rschao.plugins.techniqueAPI.tech.cooldown.CooldownManager;
+import com.rschao.plugins.techniqueAPI.tech.util.PlayerTechniqueManager;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -118,6 +120,9 @@ public class BossInstance {
         if(kitName != null){
             for(Player p: bosses){
                 loadBossKit(kitName, p);
+                //set health and reset techniques :)
+                p.setHealth(p.getAttribute(Attribute.MAX_HEALTH).getBaseValue());
+                CooldownManager.removeAllCooldowns(p);
             }
         }
         String music = BossAPI.getMusic(config, currentPhase);
