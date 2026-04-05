@@ -1,9 +1,20 @@
 package com.rschao.events;
 
-import java.util.HashMap;
+
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.rschao.items.weapons;
+import com.rschao.plugins.techniqueAPI.tech.Technique;
+import com.rschao.plugins.techniqueAPI.tech.TechniqueMeta;
+import com.rschao.plugins.techniqueAPI.tech.context.TechniqueContext;
+import com.rschao.plugins.techniqueAPI.tech.feedback.hotbarMessage;
+import com.rschao.plugins.techniqueAPI.tech.register.TechRegistry;
+import com.rschao.plugins.techniqueAPI.tech.register.TechniqueNameManager;
+import com.rschao.plugins.techniqueAPI.tech.selectors.TargetSelectors;
+import com.rschao.plugins.techniqueAPI.tech.util.PlayerTechniqueManager;
+import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,7 +27,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -28,15 +42,17 @@ import com.rschao.projectiles.DeterminationProjectile;
 
 
 public class HandEvents implements Listener{
-    private Map<UUID, Long> repelTimes = new HashMap<>();
-    private Map<UUID, Long> stopTimes = new HashMap<>();
-    private Map<UUID, Long> pushTimes = new HashMap<>();
-    private Map<UUID, Long> pullTimes = new HashMap<>();
-    private Map<UUID, Long> healTimes = new HashMap<>();
-    private Map<UUID, Long> speedTimes = new HashMap<>();
-    private Map<UUID, Long> courageTimes = new HashMap<>();
-    private Map<UUID, Long> cannonTimes = new HashMap<>();
     private final int gravityRadius = 5; // Radius for gravity effects
+
+    public HandEvents(){
+        TechRegistry.registerTechnique("hands", repeller);
+        TechRegistry.registerTechnique("hands", timeStop);
+        TechRegistry.registerTechnique("hands", gravitator);
+        TechRegistry.registerTechnique("hands", healerTech);
+        TechRegistry.registerTechnique("hands", determinationTech);
+        TechRegistry.registerTechnique("hands", braveryTech);
+        TechRegistry.registerTechnique("hands", speedTech);
+    }
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player user = event.getPlayer();
@@ -67,19 +83,56 @@ public class HandEvents implements Listener{
             handleSpeed(user, false);
         }
         if(pdc.has(new NamespacedKey("gaster", "sevenhands"))){
-            handleSevenSouls(user);
+            int techIndex = PlayerTechniqueManager.getCurrentTechnique(user.getUniqueId(), "hands");
+            if(event.getAction().toString().contains("LEFT_CLICK")){
+                Technique t = TechRegistry.getAllTechniques("hands").get(techIndex);
+                t.use(new TechniqueContext(user));
+            }
+            else if(event.getAction().toString().contains("RIGHT_CLICK")){
+                Player p = user;
+                String groupId = "hands";
+                if(p.isSneaking()){
+                    if (techIndex == 0) {
+                        PlayerTechniqueManager.setCurrentTechnique(p.getUniqueId(), groupId, TechRegistry.getAllTechniques(groupId).size() - 1);
+                        techIndex = PlayerTechniqueManager.getCurrentTechnique(p.getUniqueId(), groupId);
+                    } else {
+                        PlayerTechniqueManager.setCurrentTechnique(p.getUniqueId(), groupId, techIndex - 1);
+                        techIndex = PlayerTechniqueManager.getCurrentTechnique(p.getUniqueId(), groupId);
+                    }
+                }
+                else{
+                    PlayerTechniqueManager.setCurrentTechnique(p.getUniqueId(), groupId, (techIndex + 1) % TechRegistry.getAllTechniques(groupId).size());
+                    techIndex = PlayerTechniqueManager.getCurrentTechnique(p.getUniqueId(), groupId);
+                }
+                p.sendMessage("You have switched to technique: " + TechniqueNameManager.getDisplayName(p, TechRegistry.getAllTechniques(groupId).get(techIndex)));
+            }
+        }
+    }
+
+    @EventHandler
+    void onHotbarSwitch(PlayerItemHeldEvent ev) {
+
+        Player player = ev.getPlayer();
+        ItemStack newItem = player.getInventory().getItem(ev.getNewSlot());
+        if(newItem == null) return;
+        if(newItem.getItemMeta().getPersistentDataContainer().has(weapons.SHKey, PersistentDataType.BOOLEAN)){
+            //check the hand selected
+            int techIndex =  PlayerTechniqueManager.getCurrentTechnique(player.getUniqueId(), "hands");
+            hotbarMessage.sendHotbarMessage(player, "Currently selected: " + TechniqueNameManager.getDisplayName(player, TechRegistry.getAllTechniques("hands").get(techIndex)));
         }
     }
 
     private void handleRepeller(Player user, boolean notify) {
-        Long lastShot = this.repelTimes.get(user.getUniqueId());
-        long seconds = System.currentTimeMillis()/1000L;
-        if(lastShot != null && seconds-lastShot < 10){
-            long time = seconds-lastShot;
-            user.sendMessage(String.valueOf(10-time) + "s   ");
-            return;
+        repeller.use(new TechniqueContext(user));
+        if (notify) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                p.sendMessage(user.getName() + " has activated the power of patience!");
+            }
         }
-        repelTimes.put(user.getUniqueId(), seconds);
+    }
+
+    Technique repeller = new Technique("patience", "Patience Hand", new TechniqueMeta(false, 10000, List.of("Patience Hand")), TargetSelectors.self(), (ctx, token) -> {
+        Player user = ctx.caster();
         int soul1 = soulEvents.GetSoulN(user);
         int soul2 = soulEvents.GetSecondSoulN(user);
         int tier1 = (soul1 == -1) ? 0 : SoulType.getById(soul1).getTier();
@@ -96,35 +149,69 @@ public class HandEvents implements Listener{
                     net.kryspin.Plugin plugin = Plugin.getPlugin(net.kryspin.Plugin.class);
                     plugin.enableProFlight(user);
                 }
-                if (notify) {
-                    for(Player p: Bukkit.getOnlinePlayers()){
-                        p.sendMessage(user.getName() + " has activated the power of patience!");
-                    }
-                }
             }
         }.runTaskLater(Plugin.getPlugin(Plugin.class), 1L);
-    }
+    });
 
-    private void handleTimeStop(Player user, boolean notify) {
-        Long lastShot = this.stopTimes.get(user.getUniqueId());
-        long seconds = System.currentTimeMillis()/1000L;
-        if(lastShot != null && seconds-lastShot < 30){
-            long time = seconds-lastShot;
-            user.sendMessage(String.valueOf(30-time) + "s   ");
-            return;
-        }
-        stopTimes.put(user.getUniqueId(), seconds);
+    // Technique: Time Stop / Perseverance
+    Technique timeStop = new Technique("perseverance", "Perseverance Hand", new TechniqueMeta(false, 30000, List.of("Perseverance Hand")), TargetSelectors.self(), (ctx, token) -> {
+        Player user = ctx.caster();
         Player pl = HandPoweredEvents.getClosestPlayer(user.getLocation(), 5);
-        if(pl == null) return;
+        if (pl == null) return;
         pl.getActivePotionEffects().forEach((e) -> {
             user.addPotionEffect(e);
-            if(pl.getHealth() > user.getHealth()){
+            if (pl.getHealth() > user.getHealth()) {
                 user.setHealth(pl.getHealth());
             }
         });
-        
+    });
+
+    // Technique: Gravitator (push/pull based on sneaking)
+    Technique gravitator = new Technique("integrity", "Integrity Hand", new TechniqueMeta(false, 20000, List.of("Gravitator")), TargetSelectors.self(), (ctx, token) -> {
+        Player player = ctx.caster();
+        if (!player.isSneaking()) {
+            gravityPull(player);
+        } else {
+            gravityPush(player);
+        }
+    });
+
+    // Technique: Healer
+    Technique healerTech = new Technique("kindness", "Kindness Hand", new TechniqueMeta(false, 60000, List.of("Healer")), TargetSelectors.self(), (ctx, token) -> {
+        Player user = ctx.caster();
+        Location location = user.getLocation();
+        user.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, location, 30);
+        user.addPotionEffect(new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 3));
+    });
+
+    // Technique: Determination (cannon / blasters)
+    Technique determinationTech = new Technique("determination", "Determination Hand", new TechniqueMeta(false, 30000, List.of("Determination")), TargetSelectors.self(), (ctx, token) -> {
+        Player user = ctx.caster();
+        for (int i = 0; i < 10; i++) {
+            final int idx = i;
+            Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(Plugin.class), () -> {
+                shootCannon(user);
+            }, 4 + (2 * idx));
+        }
+    });
+
+    // Technique: Bravery
+    Technique braveryTech = new Technique("bravery", "Bravery Hand", new TechniqueMeta(false, 35000, List.of("Bravery")), TargetSelectors.self(), (ctx, token) -> {
+        Player user = ctx.caster();
+        user.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 10 * 20, 1));
+    });
+
+    // Technique: Speed / Justice
+    Technique speedTech = new Technique("justice", "Justice Hand", new TechniqueMeta(false, 60000, List.of("Speed")), TargetSelectors.self(), (ctx, token) -> {
+        Player user = ctx.caster();
+        user.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 50 * 20, 2));
+    });
+
+    private void handleTimeStop(Player user, boolean notify) {
+        timeStop.use(new TechniqueContext(user));
+
         if (notify) {
-            for(Player p: Bukkit.getOnlinePlayers()){
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(user.getName() + " has activated the power of perseverance!");
             }
         }
@@ -132,126 +219,51 @@ public class HandEvents implements Listener{
 
     private void handleGravitator(Player user, boolean notify) {
         Player player = user;
-        if (!player.isSneaking()) {
-            Long lastShot = this.pullTimes.get(user.getUniqueId());
-            long seconds = System.currentTimeMillis()/1000L;
-            if(lastShot != null && seconds-lastShot < 20){
-                long time = seconds-lastShot;
-                user.sendMessage(String.valueOf(20-time) + "s   ");
-                return;
-            }
-            pullTimes.put(user.getUniqueId(), seconds);
-            gravityPull(player);
-        } else{
-            Long lastShot = this.pushTimes.get(user.getUniqueId());
-            long seconds = System.currentTimeMillis()/1000L;
-            if(lastShot != null && seconds-lastShot < 20){
-                long time = seconds-lastShot;
-                user.sendMessage(String.valueOf(20-time) + "s   ");
-                return;
-            }
-            pushTimes.put(user.getUniqueId(), seconds);
-            gravityPush(player);
-        }
-        
+
+        // Delegate the actual push/pull to the technique
+        gravitator.use(new TechniqueContext(user));
+
         if (notify) {
-            for(Player p: Bukkit.getOnlinePlayers()){
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(user.getName() + " has activated the power of integrity!");
             }
         }
     }
 
     private void handleHealer(Player user, boolean notify) {
-        Long lastShot = this.healTimes.get(user.getUniqueId());
-        long seconds = System.currentTimeMillis()/1000L;
-        if(lastShot != null && seconds-lastShot < 60){
-            long time = seconds-lastShot;
-            user.sendMessage(String.valueOf(60-time) + "s   ");
-            return;
-        }
-        Location location = user.getLocation();
-        user.getWorld().spawnParticle(Particle.HAPPY_VILLAGER, location, 30);
-        
-        healTimes.put(user.getUniqueId(), seconds);
-        user.addPotionEffect(new PotionEffect(PotionEffectType.INSTANT_HEALTH, 1, 3));
-        
+        healerTech.use(new TechniqueContext(user));
+
         if (notify) {
-            for(Player p: Bukkit.getOnlinePlayers()){
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(user.getName() + " has activated the power of kindness!");
             }
         }
     }
 
     private void handleDetermination(Player user, boolean notify) {
-        Long lastShot = this.cannonTimes.get(user.getUniqueId());
-        long seconds = System.currentTimeMillis()/1000L;
-        if(lastShot != null && seconds-lastShot < 30){
-            long time = seconds-lastShot;
-            user.sendMessage(String.valueOf(30-time) + "s   ");
-            return;
-        }
-        cannonTimes.put(user.getUniqueId(), seconds);
-        for(int i = 0; i<10; i++){
-            Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(Plugin.class), () -> {
-                shootCannon(user);
-            }, 4+(2*i));
-        }
-        
+        determinationTech.use(new TechniqueContext(user));
+
         if (notify) {
-            for(Player p: Bukkit.getOnlinePlayers()){
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(user.getName() + " has activated the power of determination!");
             }
         }
     }
 
     private void handleBravery(Player user, boolean notify) {
-        Long lastShot = this.courageTimes.get(user.getUniqueId());
-        long seconds = System.currentTimeMillis()/1000L;
-        if(lastShot != null && seconds-lastShot < 35){
-            long time = seconds-lastShot;
-            user.sendMessage(String.valueOf(35-time) + "s");
-            return;
-        }
-        courageTimes.put(user.getUniqueId(), seconds);
-        user.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 10*20, 1));
-        
+        braveryTech.use(new TechniqueContext(user));
+
         if (notify) {
-            for(Player p: Bukkit.getOnlinePlayers()){
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(user.getName() + " has activated the power of bravery!");
             }
         }
     }
-
-    private void handleSevenSouls(Player user) {
-        if (user.getHealth() < 10 && user.getFoodLevel() > 10) {
-            handleHealer(user, true);
-        } else if (user.isSprinting() && !isPlayerInMidAir(user) && user.getFoodLevel() > 15) {
-            handleSpeed(user, true);
-        } else if (!user.isSprinting() && isPlayerInMidAir(user)&& user.getAbsorptionAmount() == 0) {
-            handleGravitator(user, true);
-        } else if (((user.isSprinting() && isPlayerInMidAir(user)) || user.isGliding())) {
-            handleRepeller(user, true);
-        } else if (user.isSprinting()&&user.getSaturation() < 14) {
-            handleBravery(user, true);
-        } else if (!user.isSprinting() && user.isSneaking() && !isPlayerInMidAir(user) && user.getSaturation() > 10) {
-            handleTimeStop(user, true);
-        } else if (!user.isSprinting() && user.getInventory().getItemInOffHand().getType() == Material.AIR || user.getInventory().getItemInOffHand() == null) {
-            handleDetermination(user, true);
-        }
-    }
     private void handleSpeed(Player user, boolean notify) {
-        Long lastShot = this.speedTimes.get(user.getUniqueId());
-        long seconds = System.currentTimeMillis()/1000L;
-        if(lastShot != null && seconds-lastShot < 60){
-            long time = seconds-lastShot;
-            user.sendMessage(String.valueOf(60-time) + "s   ");
-            return;
-        }
-        speedTimes.put(user.getUniqueId(), seconds);
-        user.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 50*20, 2));
-        
+        speedTech.use(new TechniqueContext(user));
+
         if (notify) {
-            for(Player p: Bukkit.getOnlinePlayers()){
+            for (Player p : Bukkit.getOnlinePlayers()) {
                 p.sendMessage(user.getName() + " has activated the power of justice!");
             }
         }
@@ -286,15 +298,5 @@ public class HandEvents implements Listener{
         // Code to shoot Gaster Blaster
         DeterminationProjectile projectile = new DeterminationProjectile(player.getLocation(), player);
         projectile.launch();
-    }
-    public boolean isPlayerInMidAir(Player player) {
-        // Get the player's location
-        Location location = player.getLocation();
-
-        // Get the block below the player
-        Block blockBelow = location.subtract(0, 1, 0).getBlock();
-
-        // Check if the block below is air or not solid
-        return blockBelow.getType() == Material.AIR;
     }
 }
