@@ -54,7 +54,7 @@
 		<dependency>
             <groupId>dev.jorel</groupId>
             <artifactId>commandapi-paper-shade</artifactId>
-            <version>11.0.0</version>
+            <version>11.2.0</version>
             <scope>provided</scope>
         </dependency>
 

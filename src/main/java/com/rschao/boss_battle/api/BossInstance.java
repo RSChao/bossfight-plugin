@@ -214,7 +214,7 @@ public class BossInstance {
     }
 
     static ShowdownScript<List<ItemStack>> getRewardScript(String key){
-        ShowdownScript<?> script = ScriptRegistry.getScript("boss_reward", key);
+        ShowdownScript<?> script = ScriptRegistry.getScript("boss_reward", key.toLowerCase());
         if(script == null) return null;
         return (ShowdownScript<List<ItemStack>>) script;
     }

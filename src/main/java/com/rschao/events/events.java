@@ -1,15 +1,9 @@
 package com.rschao.events;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-import com.rschao.enchants.GenoEnchant;
-import com.rschao.enchants.GlitchEnchant;
-import com.rschao.enchants.OblivionEnchant;
-import com.rschao.enchants.WitherEnchant;
+import com.rschao.enchants.*;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -36,6 +30,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -269,7 +264,6 @@ public class events implements Listener {
         item.setItemMeta(meta);
         buffsword = item;
     }
-    ItemStack cheart_revitalized;
     ItemStack chaos_katana;
     @EventHandler
     void AnvilRecipes(PrepareAnvilEvent ev){
@@ -300,26 +294,6 @@ public class events implements Listener {
             ev.setResult(item);
 
         }
-        else if(items[0].getItemMeta().getPersistentDataContainer().has(weapons.CHKey) && items[1].getItemMeta().getPersistentDataContainer().has(weapons.CEKey)){
-            ItemStack item = new ItemStack(weapons.CorruptedHeart);
-            ItemMeta meta = item.getItemMeta();
-            int t = getTest(items[0], weapons.CHKey);
-            if(t < 3 && t>0){
-                meta.getPersistentDataContainer().set(weapons.CHKey, PersistentDataType.INTEGER, t-1);
-                meta.setItemName(ChatColor.DARK_RED + "Corrupted Heart");
-                if(t-1 > 0){
-                    List<String> lore = meta.getLore();
-                    lore.add(ChatColor.RED + "Times used: " + (t-1));
-                    meta.setLore(lore);
-                }
-                item.setItemMeta(meta);
-                ev.setResult(item);
-                cheart_revitalized = item;
-            }
-            else{
-                ev.setResult(null);
-            }
-        }
     }
     @EventHandler
     void onInventoryClick(InventoryClickEvent ev) {
@@ -333,12 +307,6 @@ public class events implements Listener {
                     ev.setCancelled(true);
                 }
                 else if (result != null && result.isSimilar(buffsword)) {
-                    Player player = (Player) ev.getWhoClicked();
-                    player.getInventory().addItem(result);
-                    anvilInventory.clear();
-                    ev.setCancelled(true);
-                }
-                else if (result != null && result.isSimilar(cheart_revitalized)) {
                     Player player = (Player) ev.getWhoClicked();
                     player.getInventory().addItem(result);
                     anvilInventory.clear();
@@ -462,19 +430,26 @@ public class events implements Listener {
         //InvManager.SanitizeInventory((Player) ev.getWhoClicked());
     }
 
-    void onPlayerInteractCheart(PlayerInteractEvent ev){
-        if(ev.getItem() == null) return;
-        if(ev.getItem().isSimilar(weapons.CorruptedHeart)){
-            if(ev.getAction() == Action.RIGHT_CLICK_AIR){
-                //check that the corrupted heart is on the main hand
-                if(!ev.getPlayer().getInventory().getItemInMainHand().isSimilar(weapons.CorruptedHeart)) return;
-                //swap the item in the main hand with the item in the offhand
-                Player p = ev.getPlayer();
-                ItemStack mainHandItem = p.getInventory().getItemInMainHand();
-                ItemStack offHandItem = p.getInventory().getItemInOffHand();
-                p.getInventory().setItemInMainHand(offHandItem);
-                p.getInventory().setItemInOffHand(mainHandItem);
+    @EventHandler
+    void onnventoryClick(InventoryClickEvent ev) {
+        if (ev.getView().getTitle().equals("Showdown Anvil")) {
+            int[] slotsToCheck = {28, 30};
+            Inventory inv = ev.getInventory();
+            if(inv.getItem(slotsToCheck[1]) == null || !Objects.requireNonNull(inv.getItem(slotsToCheck[1])).isSimilar(weapons.CorrupredEssence)) return;
+            if(inv.getItem(slotsToCheck[0]) == null || !Objects.requireNonNull(inv.getItem(slotsToCheck[0])).getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER)) return;
+
+            int chCount = inv.getItem(slotsToCheck[0]).getItemMeta().getPersistentDataContainer().get(weapons.CHKey, PersistentDataType.INTEGER);
+            int level = inv.getItem(slotsToCheck[0]).getEnchantmentLevel((new Determined()).getCustomEnchantment().toBukkitEnchantment());
+            if(chCount >= 3*level || chCount <=0 || level == 0) return;
+            ItemStack result = new ItemStack(weapons.CorruptedHeart);
+            ItemMeta meta = result.getItemMeta();
+            meta.addEnchant(new Determined().getCustomEnchantment().toBukkitEnchantment(), level, true);
+            meta.getPersistentDataContainer().set(weapons.CHKey, PersistentDataType.INTEGER, chCount -1);
+            if(chCount-1>0){
+                meta.setLore(List.of("Times used: " + (chCount - 1)));
             }
+            result.setItemMeta(meta);
+            inv.setItem(33, result);
         }
     }
 }

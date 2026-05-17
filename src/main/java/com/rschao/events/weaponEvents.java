@@ -78,10 +78,6 @@ public class weaponEvents implements Listener{
 
         }
     }
-    @EventHandler
-    void onPlayerLogin(PlayerLoginEvent ev){
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
-    }
     
     public static void setTest(ItemStack item, int progress, NamespacedKey key) {
         ItemMeta meta = item.getItemMeta();
