@@ -121,7 +121,7 @@ public class DimensionalManipEnchant extends EasyEnchant {
         if(item == null) return;
         if(!item.hasItemMeta()) return;
         if(!hasEnchantment(item)) return;
-
+        if(ev.getCause() != PlayerTeleportEvent.TeleportCause.COMMAND) return;
         Player player = ev.getPlayer();
         if(player.getGameMode() == GameMode.SPECTATOR) return;
         Location oldLocation = ev.getFrom();
