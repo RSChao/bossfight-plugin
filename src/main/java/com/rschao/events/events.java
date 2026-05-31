@@ -430,27 +430,5 @@ public class events implements Listener {
         //InvManager.SanitizeInventory((Player) ev.getWhoClicked());
     }
 
-    @EventHandler
-    void onnventoryClick(InventoryClickEvent ev) {
-        if (ev.getView().getTitle().equals("Showdown Anvil")) {
-            int[] slotsToCheck = {28, 30};
-            Inventory inv = ev.getInventory();
-            if(inv.getItem(slotsToCheck[1]) == null || !Objects.requireNonNull(inv.getItem(slotsToCheck[1])).isSimilar(weapons.CorrupredEssence)) return;
-            if(inv.getItem(slotsToCheck[0]) == null || !Objects.requireNonNull(inv.getItem(slotsToCheck[0])).getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER)) return;
-
-            int chCount = inv.getItem(slotsToCheck[0]).getItemMeta().getPersistentDataContainer().get(weapons.CHKey, PersistentDataType.INTEGER);
-            int level = inv.getItem(slotsToCheck[0]).getEnchantmentLevel((new Determined()).getCustomEnchantment().toBukkitEnchantment());
-            if(chCount >= 3*level || chCount <=0 || level == 0) return;
-            ItemStack result = new ItemStack(weapons.CorruptedHeart);
-            ItemMeta meta = result.getItemMeta();
-            meta.addEnchant(new Determined().getCustomEnchantment().toBukkitEnchantment(), level, true);
-            meta.getPersistentDataContainer().set(weapons.CHKey, PersistentDataType.INTEGER, chCount -1);
-            if(chCount-1>0){
-                meta.setLore(List.of("Times used: " + (chCount - 1)));
-            }
-            result.setItemMeta(meta);
-            inv.setItem(33, result);
-        }
-    }
 }
 
