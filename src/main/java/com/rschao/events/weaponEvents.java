@@ -1,8 +1,14 @@
 package com.rschao.events;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.CustomEnchantment;
+import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.registry.EnchantmentRegistry;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.registry.ScriptRegistry;
 import org.bukkit.Bukkit;
@@ -53,20 +59,49 @@ public class weaponEvents implements Listener{
         if (((p.getHealth() - ev.getFinalDamage()) <= 0) && p.getInventory().getItemInOffHand().getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER))
         {
             ItemStack item = p.getInventory().getItemInOffHand();
+            boolean isEmblem = false;
 
             int level =item.getEnchantmentLevel(Enchantment.getByKey(NamespacedKey.minecraft("determined")));
             if(level<1) level = 1;
+            CustomEnchantment enchantment = EnchantmentRegistry.getEnchantment("showdowncore:god_emblem");
+            if(enchantment != null && item.containsEnchantment(enchantment.toBukkitEnchantment())) {
+                level = 10;
+                isEmblem = true;
+            }
             if(p.getInventory().getItemInOffHand().getItemMeta().getPersistentDataContainer().get(weapons.CHKey, PersistentDataType.INTEGER).intValue() > 3*level) return;
+            int t = getTest(p.getInventory().getItemInOffHand(), weapons.CHKey);
+            if (t >=3*level && isEmblem){
+                int odds = 70;
+                Random random = new Random();
+                int i = random.nextInt(100);
+                if (i > odds) {
+                    Bukkit.getLogger().info("Shattering emblem for " + p.getName() + " with " + t + " uses.");
+                    Bukkit.getLogger().info("Odds were " + odds + "%, rolled " + i);
+                    ev.setCancelled(false);
+                    p.ban("Your god emblem has shattered due to overuse.", Duration.of(1, ChronoUnit.HOURS), "Divine Emblem Shatter");
+                    return;
+                }
+            }
             ev.setCancelled(true);
             p.sendMessage("But it refused");
-            int t = getTest(p.getInventory().getItemInOffHand(), weapons.CHKey);
             t += 1;
             p.sendMessage((t) + "/" + (3*level));
-            setTest(p.getInventory().getItemInOffHand(), t, weapons.CHKey);
+            if(t <= 3*level || !isEmblem){
+                setTest(p.getInventory().getItemInOffHand(), t, weapons.CHKey);
+            }
             popPlayerLimit(p, t, 3*level);
-            if(t >=3*level){
+            if(t >=3*level && !isEmblem){
                 item.setAmount(0);
                 return;
+            }
+            else if (t >=3*level && isEmblem){
+                int odds = 70;
+                Random random = new Random();
+                int i = random.nextInt(100);
+                if (i > odds) {
+                    ev.setCancelled(false);
+                    p.ban("Your god emblem has shattered due to overuse.", Duration.of(1, ChronoUnit.SECONDS), "Divine Emblem Shatter");
+                }
             }
             ItemMeta meta = item.getItemMeta();
             List<String> list = new ArrayList<String>();
