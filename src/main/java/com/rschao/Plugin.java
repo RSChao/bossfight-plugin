@@ -9,8 +9,12 @@ import com.rschao.boss_battle.InvManager;
 import com.rschao.boss_battle.api.BossListener;
 import com.rschao.commands.*;
 import com.rschao.enchants.*;
+import com.rschao.items.weapons;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.EasyEnchantManager;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.definition.EasyEnchant;
+import com.rschao.plugins.showdowncore.showdownCore.gui.anvil.AnvilRecipe;
+import com.rschao.plugins.showdowncore.showdownCore.gui.recipe.CodeRecipe;
+import com.rschao.plugins.showdowncore.showdownCore.gui.recipe.RecipeAction;
 import com.rschao.techs.Choco;
 import com.rschao.techs.Jevil;
 import com.rschao.techs.Magician;
@@ -23,6 +27,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.fren_gor.ultimateAdvancementAPI.AdvancementTab;
@@ -93,7 +98,7 @@ public class Plugin extends JavaPlugin implements Listener
       Items.Init();
     Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
         Jevil.RegisterTechs();
-
+        registerShowdownCoreRecipes();
         Items.addEnchants();
         LOGGER.info("Registered Jevil Techs");
     }); // Delay of 5 seconds (20 ticks per second)
@@ -172,4 +177,38 @@ public class Plugin extends JavaPlugin implements Listener
 
     Bukkit.getPluginManager().registerEvents(new BossListener(), Plugin.getPlugin(Plugin.class));
   }
+
+  public void registerShowdownCoreRecipes(){
+      ItemStack[] ingredients = new ItemStack[]{new ItemStack(weapons.CorruptedHeart), new ItemStack(weapons.CorrupredEssence)};
+    RecipeAction r = (inputs) -> {
+        ItemStack i1 = inputs[0];
+        ItemStack i2 = inputs[1];
+      ItemStack result = new ItemStack(weapons.CorruptedHeart);
+      ItemMeta meta = result.getItemMeta();
+      if(!i1.hasItemMeta() || !i1.getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER)) return new ItemStack(Material.AIR);
+      if(!i2.hasItemMeta() || !i2.getItemMeta().getPersistentDataContainer().has(weapons.CEKey)) return new ItemStack(Material.AIR);
+      int chCount = i1.getItemMeta().getPersistentDataContainer().get(weapons.CHKey, PersistentDataType.INTEGER);
+      int level = i1.getEnchantmentLevel((new Determined()).getCustomEnchantment().toBukkitEnchantment());
+      if(chCount >= 3*level || chCount <=0 || level == 0) return new ItemStack(Material.AIR);
+      meta.addEnchant(new Determined().getCustomEnchantment().toBukkitEnchantment(), level, true);
+      meta.getPersistentDataContainer().set(weapons.CHKey, PersistentDataType.INTEGER, chCount -1);
+      if(chCount-1>0){
+        meta.setLore(List.of("Times used: ", "" +(chCount - 1)));
+      }
+      result.setItemMeta(meta);
+      return result;
+    };
+    CodeRecipe recipe = new CodeRecipe(ingredients, r);
+    recipe.setCondition((input) -> {
+      ItemStack i1 = input[0];
+      ItemStack i2 = input[1];
+      boolean b1 = i1.hasItemMeta() && i1.getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER);
+        boolean b2 = i2.hasItemMeta() && i2.getItemMeta().getPersistentDataContainer().has(weapons.CEKey);
+        Bukkit.getLogger().info("Checking recipe conditions: " + b1 + ", " + b2);
+        return b1 && b2;
+    });
+
+    AnvilRecipe.registerCodeRecipe(recipe);
+  }
+
 }
