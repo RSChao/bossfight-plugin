@@ -72,6 +72,9 @@ public class BossAPI {
     }
 
     public static BossInstance startFight(String key, FileConfiguration configuration, List<Player> bosses, List<Player> fighters) {
+        if (BossHandler.isBossRush(configuration)) {
+            BossHandler.prepareSuperboss(key, configuration);
+        }
         BossInstance instance = new BossInstance(key, configuration, bosses, fighters);
         running.add(instance);
         instance.start();
@@ -111,6 +114,7 @@ public class BossAPI {
             List<ItemStack> drops = (List<ItemStack>) args[0];
             List<String> keep = List.of("BOOK", "DRAGON", "BOX", "HOOK", "ELYTRA", "PAPER", "WART", "POWDER");
             for(ItemStack dropped : drops){
+                if(dropped == null) continue;
                 if(keep.stream().anyMatch(s -> dropped.getType().name().contains(s))){
                     continue;
                 }
