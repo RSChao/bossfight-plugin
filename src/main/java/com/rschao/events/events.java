@@ -219,7 +219,7 @@ public class events implements Listener {
     @EventHandler
     void MobGoDed(EntityDeathEvent ev){
         if(ev.getEntity() instanceof Player){
-            ev.getDrops().add(Items.DeterminationCrystal);
+            ev.getDrops().add(Items.DeterminationEssence);
             return;
         }
         if(!(ev.getEntity() instanceof Warden)){ return; }
@@ -349,7 +349,7 @@ public class events implements Listener {
     {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
-        return pdc.get(key, PersistentDataType.INTEGER);
+        return pdc.getOrDefault(key, PersistentDataType.INTEGER, 0);
     }
 
     /*@EventHandler
@@ -424,10 +424,6 @@ public class events implements Listener {
                 }
             }
         }, 2L);
-    }
-    @EventHandler
-    void onPlayerClick(InventoryClickEvent ev){
-        //InvManager.SanitizeInventory((Player) ev.getWhoClicked());
     }
 
 }

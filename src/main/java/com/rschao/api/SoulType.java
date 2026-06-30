@@ -141,6 +141,10 @@ public enum SoulType {
     }
 
     public static double getDamageMultiplier(int soulId) {
-        return values()[soulId].damage;
+        SoulType soul = getById(soulId);
+        if (soul == null) {
+            return 1.0; // Default multiplier for unknown souls
+        }
+        return soul.damage;
     }
 }
