@@ -89,7 +89,7 @@ public class BossInstance {
         if (ev.isCancelled()) return;
 
         // Recompensas básicas tomadas del inventario del boss principal (igual que antes)
-        rewards.addAll(Arrays.stream(bosses.getFirst().getInventory().getContents()).toList());
+        rewards.addAll(Arrays.stream(new ItemStack[0]).toList());
 
         String rewardCMD = BossAPI.getRewardCommand(config);
         if (rewardCMD != null) {
@@ -101,67 +101,6 @@ public class BossInstance {
         // Si hay drops configurados globalmente para este boss (caso no-superboss)
         List<ItemStack> configuredDrops = DropsManager.loadDropsFromConfig(key);
 
-        // Si es superboss, en lugar de usar solo 'key' vamos a recolectar de todos los sub-bosses
-        if (BossHandler.isBossRush(config)) {
-            // Obtener lista de subbosses incluidos (resolveBossListFromRush respeta include/exclude)
-            List<String> included = BossHandler.resolveBossListFromRush(config);
-
-            List<ItemStack> aggregated = new ArrayList<>();
-            Random rnd = new Random();
-
-            for (String bkey : included) {
-                // Cargar drops del sub-boss
-                List<ItemStack> subDrops = DropsManager.loadDropsFromConfig(bkey);
-                if (subDrops == null || subDrops.isEmpty()) continue;
-
-                // Determinar chance para este sub-boss
-                int chance = -1;
-                // 1) superboss config específica: boss.reward.<bkey>.chance
-                String specificPath = "boss.reward." + bkey + ".chance";
-                if (config.contains(specificPath)) {
-                    chance = config.getInt(specificPath);
-                } else if (config.contains("boss.reward.chance")) {
-                    // 2) superboss general: boss.reward.chance
-                    chance = config.getInt("boss.reward.chance");
-                } else {
-                    // 3) fallback al propio sub-boss config: boss.reward.chance
-                    FileConfiguration subCfg = BossHandler.loadBoss(bkey);
-                    if (subCfg != null && subCfg.contains("boss.reward.chance")) {
-                        chance = subCfg.getInt("boss.reward.chance");
-                    }
-                }
-                if (chance <= 0 || chance > 100) chance = 100;
-
-                // Aplicar chance a cada ItemStack del sub-boss
-                for (ItemStack it : subDrops) {
-                    if (it == null) continue;
-                    if (rnd.nextInt(100) + 1 <= chance) {
-                        aggregated.add(it.clone());
-                    }
-                }
-            }
-
-            if (!aggregated.isEmpty()) {
-                // Empaquetar en barriles (y anidar si hace falta)
-                List<ItemStack> finalContainers = packIntoBarrels(aggregated);
-
-                // Dar cada contenedor a cada fighter (intentar añadir al inventario, soltar sobrantes)
-                for (Player fighter : fighters) {
-                    for (ItemStack container : finalContainers) {
-                        Map<Integer, ItemStack> leftover = fighter.getInventory().addItem(container.clone());
-                        if (!leftover.isEmpty()) {
-                            for (ItemStack l : leftover.values()) {
-                                fighter.getWorld().dropItemNaturally(fighter.getLocation(), l);
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Si no hay ítems después del filtrado, fallback al sistema de rewards normal
-                handleDrops(bosses.getFirst(), rewards);
-            }
-            return;
-        }
 
         // No es superboss: comportamiento previo
         if (configuredDrops != null && !configuredDrops.isEmpty()) {
@@ -184,29 +123,6 @@ public class BossInstance {
         FileConfiguration effectiveConfig = this.config;
         int effectivePhase = this.currentPhase;
 
-        // Si este boss es un superboss con bossrush, intentar leer "boss_order" para esta fase
-        try {
-            if (BossHandler.isBossRush(this.config)) {
-                File orderFile = new File(Plugin.getPlugin(Plugin.class).getDataFolder(), "bosses/boss_order.yml");
-                FileConfiguration orderCfg = YamlConfiguration.loadConfiguration(orderFile);
-                ConfigurationSection mapping = orderCfg.getConfigurationSection("order." + key + "." + currentPhase);
-                if (mapping != null) {
-                    String subBossKey = mapping.getString("boss");
-                    int subBossPhase = mapping.getInt("phase", currentPhase);
-
-                    FileConfiguration subCfg = BossHandler.loadBoss(subBossKey);
-                    if (subCfg != null) {
-                        effectiveConfig = subCfg;
-                        effectivePhase = subBossPhase;
-                    } else {
-                        Bukkit.getLogger().warning("BossInstance: no se pudo cargar sub-boss '" + subBossKey + "' para superboss " + key);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            // seguir usando config original si algo falla
-        }
 
         Location loc = BossAPI.getLocation(effectiveConfig, effectivePhase);
         if(loc == null) return;

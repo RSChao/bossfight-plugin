@@ -72,9 +72,6 @@ public class BossAPI {
     }
 
     public static BossInstance startFight(String key, FileConfiguration configuration, List<Player> bosses, List<Player> fighters) {
-        if (BossHandler.isBossRush(configuration)) {
-            BossHandler.prepareSuperboss(key, configuration);
-        }
         BossInstance instance = new BossInstance(key, configuration, bosses, fighters);
         running.add(instance);
         instance.start();

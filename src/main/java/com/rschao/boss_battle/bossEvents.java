@@ -186,11 +186,6 @@ public class bossEvents implements Listener {
                 case "brokensoul.Lore_secret_seven":
                     drops.add(weapons.SevenSouls);
                     break;
-                case "bossrush.double_fruit":
-                    for(Player p : bossPlayers){
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "lp user %target% permission set fruits.second true".replace("%target%", p.getName()));
-                    }
-                    break;
                 case "s3lore.portal":
                     for(Player p : bossPlayers){
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "tag %target% add Showdown".replace("%target%", p.getName()));

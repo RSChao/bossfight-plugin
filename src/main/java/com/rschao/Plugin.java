@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.rschao.advs.tab0.*;
 import com.rschao.boss_battle.InvManager;
+import com.rschao.boss_battle.api.BossCMDs;
 import com.rschao.boss_battle.api.BossListener;
 import com.rschao.commands.*;
 import com.rschao.enchants.*;
@@ -130,6 +131,7 @@ public class Plugin extends JavaPlugin implements Listener
     boss_settings_cmds.setDrops().register("gaster");
     PlayTheme.register();
     bossCmds.reloadList().register("gaster");
+    BossCMDs.createSuperBoss().register("gaster");
   }
 
   public void onDisable()
