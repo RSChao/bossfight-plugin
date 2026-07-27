@@ -4,6 +4,10 @@ import java.io.File;
 import java.util.*;
 
 import com.rschao.enchants.*;
+import com.rschao.plugins.techniqueAPI.tech.Technique;
+import com.rschao.plugins.techniqueAPI.tech.TechniqueMeta;
+import com.rschao.plugins.techniqueAPI.tech.cooldown.CooldownManager;
+import com.rschao.plugins.techniqueAPI.tech.selectors.TargetSelectors;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -424,6 +428,41 @@ public class events implements Listener {
                 }
             }
         }, 2L);
+    }
+
+    static Technique t = new Technique("repair_c_heart", "Repair C-Heart", new TechniqueMeta(false, 3000, new ArrayList<>()), TargetSelectors.self(), (ctx, token) ->{
+       ItemStack offHand = ctx.caster().getInventory().getItemInOffHand();
+         if(offHand.getItemMeta().getPersistentDataContainer().has(weapons.CHKey, PersistentDataType.INTEGER)){
+                int progress = offHand.getItemMeta().getPersistentDataContainer().getOrDefault(weapons.CHKey, PersistentDataType.INTEGER, 0);
+                if(progress < 1) return;
+                progress -= 1;
+                weaponEvents.setTest(offHand, progress, weapons.CHKey);
+                ItemMeta meta = offHand.getItemMeta();
+                List<String> list = new ArrayList<>();
+                if(progress == 0){
+                    list.add("Its effects are a mystery");
+                }
+                else{
+                    list.add("Times used:");
+                    list.add(String.valueOf(progress));
+                }
+                meta.setLore(list);
+                offHand.setItemMeta(meta);
+                ctx.caster().sendMessage(ChatColor.GREEN + "You have repaired the C-Heart by 1 point. Current uses: " + progress);
+          }
+    });
+
+    @EventHandler
+    void onInteractEssence(PlayerInteractEvent ev){
+        if(ev.getItem() == null) return;
+        if(ev.getItem().getItemMeta().getPersistentDataContainer().has(weapons.CEKey, PersistentDataType.BOOLEAN)){
+            Player player = ev.getPlayer();
+            if(CooldownManager.isOnCooldown(player, t.getId())){
+                return;
+            }
+            t.use(player);
+            ev.getItem().setAmount(ev.getItem().getAmount() - 1);
+        }
     }
 
 }
