@@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -37,7 +38,8 @@ public class OblivionEnchant extends EasyEnchant {
             int rng = (new Random()).nextInt(0, 100);
             if(player.getInventory().getItemInMainHand().getType() == Material.AIR) return;
             if(!hasEnchantment(player.getInventory().getItemInMainHand())) return;
-            if(rng < 3){
+            int level = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.getByKey(getKey()));
+            if(rng < 3+level){
                 oblivion(player, damaged);
             }
         }

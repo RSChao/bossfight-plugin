@@ -33,16 +33,8 @@ public class GenoEnchant extends EasyEnchant {
 
             if(!hasEnchantment(itemUsed)) return;
             int level = itemUsed.getEnchantmentLevel(Enchantment.getByKey(getKey()));
+            if(level <= 0) return;
             if(rng <= (level)){
-                //check if geno is on cooldown
-                if(events.genoCooldown.containsKey(player.getUniqueId())){
-                    long lastShot = events.genoCooldown.get(player.getUniqueId());
-                    long seconds = System.currentTimeMillis()/1000L;
-                    if(seconds - lastShot < 300){
-                        return;
-                    }
-                }
-                events.genoCooldown.put(player.getUniqueId(), System.currentTimeMillis()/1000L);
                 ev.setDamage(1000);
                 damaged.sendMessage(net.md_5.bungee.api.ChatColor.DARK_RED + "You feel like you're going to have a bad time");
                 player.sendMessage(net.md_5.bungee.api.ChatColor.DARK_RED + "=)");
