@@ -1,5 +1,6 @@
 package com.rschao.commands;
 
+import com.rschao.api.SoulType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,12 +25,28 @@ public class giveItems {
     }
     public static CommandAPICommand Souls(){
         CommandAPICommand cmd = new CommandAPICommand("souls")
-        .withSubcommands(MainSouls(), New(), Special())
+        .withSubcommands(MainSouls(), New(), Special(), tier())
         .executesPlayer((Player player, CommandArguments args) -> {
             player.sendMessage("select a type");
         });
         return cmd;
     }
+
+    static CommandAPICommand tier(){
+        CommandAPICommand cmd = new CommandAPICommand("tier")
+                .withArguments(new IntegerArgument("tier", 1, 5))
+                .executesPlayer((Player player, CommandArguments args) -> {
+                    Integer tier = (Integer) args.getOrDefault("tier", 1);
+                    for(SoulType type : SoulType.values()){
+                        if(type.getTier() == tier){
+                            ItemStack soul = Items.getSoulItem(type.getId());
+                            player.getInventory().addItem(soul);
+                        }
+                    }
+                });
+        return cmd;
+    }
+
     public static CommandAPICommand Special(){
         CommandAPICommand cmd = new CommandAPICommand("special")
         .withSubcommands(Darkness(), SevenSouls(), Void(), Neutral(), Chaos(), PurityH(), Divine())
