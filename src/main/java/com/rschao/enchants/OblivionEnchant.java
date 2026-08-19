@@ -1,5 +1,6 @@
 package com.rschao.enchants;
 
+import com.rschao.events.definitions.ItemOblivionEvent;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.CustomEnchantment;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.definition.EasyEnchant;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.util.ColorCodes;
@@ -11,6 +12,7 @@ import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.api.chat.hover.content.Item;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -59,7 +61,8 @@ public class OblivionEnchant extends EasyEnchant {
             damaged.sendMessage("Your items fell into oblivion");
             damaged.spigot().sendMessage(txt);
 
-
+            ItemOblivionEvent ev = new ItemOblivionEvent(damaged, player, array[random]);
+            Bukkit.getPluginManager().callEvent(ev);
             array[random].setAmount(0);
             damaged.getInventory().setContents(array);
         }

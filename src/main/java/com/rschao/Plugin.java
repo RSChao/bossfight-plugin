@@ -143,15 +143,11 @@ public class Plugin extends JavaPlugin implements Listener
   ItemMeta meta = rootIcon.getItemMeta();
   meta.setItemModel(NamespacedKey.minecraft("soul_e"));
   rootIcon.setItemMeta(meta);
-  ItemStack rootIcon2 = new ItemStack(Material.NAUTILUS_SHELL);
-  ItemMeta meta2 = rootIcon2.getItemMeta();
-  meta2.setItemModel(NamespacedKey.minecraft("g_seven_hands"));
-  rootIcon2.setItemMeta(meta2);
 
   api = UltimateAdvancementAPI.getInstance(this);
   tab0 = api.createAdvancementTab(AdvancementTabNamespaces.tab0_NAMESPACE);
   AdvancementKey oak_sapling0Key = new AdvancementKey(tab0.getNamespace(), "souls");
-  CoordAdapter adaptertab0 = CoordAdapter.builder().add(oak_sapling0Key, 0f, 0f).add(Getsoul.KEY, 1f, 0f).add(Cleansoul.KEY, 1f, 1f).add(Soul_determination.KEY, 2f, 0f).add(Soul_compassion.KEY, 3f, 0f).add(Soul_love.KEY, 5f, 0f).add(Soul_hate.KEY, 4f, 0f).add(Soul_master.KEY, 6f, 0f).add(Soul_hostility.KEY, 7f, 0f).add(Soul_seven.KEY, 8f, 0f).add(Boss_final.KEY, 6f, 1f).add(Boss_origin.KEY, 6, 2).add(Boss_arlek.KEY, 6, 3).add(Boss_tower.KEY, 7, 3).build();
+  CoordAdapter adaptertab0 = CoordAdapter.builder().add(oak_sapling0Key, 0f, 0f).add(Getsoul.KEY, 1f, 0f).add(Cleansoul.KEY, 1f, 1f).add(Soul_determination.KEY, 2f, 0f).add(Soul_compassion.KEY, 3f, 0f).add(Soul_love.KEY, 5f, 0f).add(Soul_hate.KEY, 4f, 0f).add(Soul_master.KEY, 6f, 0f).add(Soul_hostility.KEY, 7f, 0f).add(Soul_seven.KEY, 8f, 0f).add(Boss_final.KEY, 1f, 5f).add(Boss_origin.KEY, 2, 5).add(Boss_arlek.KEY, 3, 5).add(Boss_tower.KEY, 3, 4).add(Boss_aion.KEY, 4, 5).build();
   RootAdvancement oak_sapling0 = new RootAdvancement(tab0, oak_sapling0Key.getKey(), new AdvancementDisplay(rootIcon, "The power of souls", AdvancementFrameType.TASK, true, true, adaptertab0.getX(oak_sapling0Key), adaptertab0.getY(oak_sapling0Key), "With it, thou shalt reach new heights"),"textures/block/black_concrete_powder.png",1);
   Getsoul getsoul = new Getsoul(oak_sapling0,adaptertab0.getX(Getsoul.KEY), adaptertab0.getY(Getsoul.KEY));
   Cleansoul cleansoul = new Cleansoul(getsoul,adaptertab0.getX(Cleansoul.KEY), adaptertab0.getY(Cleansoul.KEY));
@@ -162,11 +158,12 @@ public class Plugin extends JavaPlugin implements Listener
   Soul_master soul_master = new Soul_master( adaptertab0.getX(Soul_master.KEY), adaptertab0.getY(Soul_master.KEY), soul_love, soul_hate);
   Soul_hostility soul_hostility = new Soul_hostility(soul_master,adaptertab0.getX(Soul_hostility.KEY), adaptertab0.getY(Soul_hostility.KEY));
   Soul_seven oak_sapling20 = new Soul_seven(soul_hostility,adaptertab0.getX(Soul_seven.KEY), adaptertab0.getY(Soul_seven.KEY));
-  Boss_final boss_final = new Boss_final(soul_love,adaptertab0.getX(Boss_final.KEY), adaptertab0.getY(Boss_final.KEY));
+  Boss_final boss_final = new Boss_final(oak_sapling0,adaptertab0.getX(Boss_final.KEY), adaptertab0.getY(Boss_final.KEY));
   Boss_origin boss_origin = new Boss_origin(boss_final,adaptertab0.getX(Boss_origin.KEY), adaptertab0.getY(Boss_origin.KEY));
   Boss_arlek arlek = new Boss_arlek(boss_origin,adaptertab0.getX(Boss_arlek.KEY), adaptertab0.getY(Boss_arlek.KEY));
     Boss_tower boss_tower = new Boss_tower(boss_origin,adaptertab0.getX(Boss_tower.KEY), adaptertab0.getY(Boss_tower.KEY));
-  tab0.registerAdvancements(oak_sapling0 ,getsoul ,cleansoul ,soul_determination ,soul_compassion ,soul_love  ,soul_hate ,soul_master ,soul_hostility ,oak_sapling20 ,boss_final, boss_origin, arlek, boss_tower);
+    Boss_aion aion = new Boss_aion(arlek,adaptertab0.getX(Boss_aion.KEY), adaptertab0.getY(Boss_aion.KEY));
+  tab0.registerAdvancements(oak_sapling0 ,getsoul ,cleansoul ,soul_determination ,soul_compassion ,soul_love  ,soul_hate ,soul_master ,soul_hostility ,oak_sapling20 ,boss_final, boss_origin, arlek, boss_tower, aion);
 }
   @EventHandler
   public void onJoin(PlayerLoadingCompletedEvent e) {

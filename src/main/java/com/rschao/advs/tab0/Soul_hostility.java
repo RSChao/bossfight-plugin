@@ -33,6 +33,7 @@ public class Soul_hostility extends BaseAdvancement implements HiddenVisibility 
       if(ev.getItem() == null) return;
       Player p = ev.getPlayer();
       ItemMeta meta = ev.getItem().getItemMeta();
+      if(meta == null) return;
       if(meta.getPersistentDataContainer().has(Items.HoSKey)){
         incrementProgression(p);
       }

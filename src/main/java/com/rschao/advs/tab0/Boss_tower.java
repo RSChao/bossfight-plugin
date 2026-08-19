@@ -22,10 +22,9 @@ public class Boss_tower extends BaseAdvancement implements HiddenVisibility {
     public static AdvancementKey KEY = new AdvancementKey(AdvancementTabNamespaces.tab0_NAMESPACE, "boss_guaka");
     static ItemStack icon = new ItemStack(Material.LEATHER);
     static {
-
         ItemMeta meta = icon.getItemMeta();
         meta.setEnchantmentGlintOverride(true);
-        meta.setItemModel(NamespacedKey.minecraft("purity_heart"));
+        meta.setItemModel(NamespacedKey.minecraft("whacka_bump_rainbow"));
         icon.setItemMeta(meta);
     }
 

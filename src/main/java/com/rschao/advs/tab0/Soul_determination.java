@@ -31,6 +31,7 @@ public class Soul_determination extends BaseAdvancement  {
       if(ev.getItem() == null) return;
       Player p = ev.getPlayer();
       ItemMeta meta = ev.getItem().getItemMeta();
+      if(meta == null) return;
       if(meta.getItemName().equals("Human Soul")){
         incrementProgression(p);
       }

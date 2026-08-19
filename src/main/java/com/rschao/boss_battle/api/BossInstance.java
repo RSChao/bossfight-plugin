@@ -103,7 +103,7 @@ public class BossInstance {
 
 
         // No es superboss: comportamiento previo
-        if (configuredDrops != null && !configuredDrops.isEmpty()) {
+        if (!configuredDrops.isEmpty()) {
             for (Player fighter : fighters) {
                 ItemStack shulkerBox = DropsManager.createShulkerBoxWithDrops(configuredDrops);
                 Map<Integer, ItemStack> leftover = fighter.getInventory().addItem(shulkerBox);

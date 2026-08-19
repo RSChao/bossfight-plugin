@@ -32,6 +32,7 @@ public class Soul_seven extends BaseAdvancement implements ParentGrantedVisibili
       if(ev.getItem() == null) return;
       Player p = ev.getPlayer();
       ItemMeta meta = ev.getItem().getItemMeta();
+      if(meta == null) return;
       if(meta.getPersistentDataContainer().has(new NamespacedKey("soul", "seven"))){
         incrementProgression(p);
       }

@@ -159,6 +159,7 @@ public class soulEvents implements Listener {
                 }
             }
             else {
+                if(SoulType.getById(DsoulN) == null || SoulType.getById(DSecondSoulN) == null || SoulType.getById(VsoulN) == null || SoulType.getById(VSecondSoulN) == null)
                 if ((SoulType.getById(DsoulN).getTier() == 3 || SoulType.getById(DSecondSoulN).getTier() == 3) && (SoulType.getById(VsoulN).getTier() == 1 || SoulType.getById(VSecondSoulN).getTier() == 1)) {
                     ev.setDamage(ev.getDamage() + 2);
                     if(showMessage){

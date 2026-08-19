@@ -32,6 +32,7 @@ public class Cleansoul extends BaseAdvancement  {
       if(ev.getItem() == null) return;
       Player p = ev.getPlayer();
       ItemMeta meta = ev.getItem().getItemMeta();
+      if(meta == null) return;
       if(meta.getPersistentDataContainer().has(Hands.SoulCleanerKey) || meta.getPersistentDataContainer().has(Hands.SoulCleanerBuffedKey)){
         incrementProgression(p);
       }

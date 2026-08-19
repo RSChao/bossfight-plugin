@@ -32,6 +32,7 @@ public class Soul_hate extends BaseAdvancement  {
       if(ev.getItem() == null) return;
       Player p = ev.getPlayer();
       ItemMeta meta = ev.getItem().getItemMeta();
+      if(meta == null) return;
       if(meta.getItemName().equals("Currupted Soul")){
         incrementProgression(p);
       }

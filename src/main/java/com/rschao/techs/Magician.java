@@ -295,6 +295,7 @@ public class Magician {
 
             for (Breach b : breaches.values()) {
                 if (b.trappedPlayers.contains(pid)) {
+                    if(!p.getWorld().equals(b.loc.getWorld())) continue;
                     isTrapped = true;
                     double dist = p.getLocation().distance(b.loc);
                     if (dist < nearestDist) {

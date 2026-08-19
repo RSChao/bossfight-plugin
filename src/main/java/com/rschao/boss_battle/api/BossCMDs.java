@@ -46,7 +46,7 @@ public class BossCMDs {
 
     public static CommandAPICommand Load(){
         CommandAPICommand cmd = new CommandAPICommand("boss")
-                .withPermission("gaster.admin")
+                .withPermission("gaster.boss")
                 .withHelp("/boss <config> [player]", "Inicia un boss usando la configuración indicada")
                 .withArguments(new StringArgument("config").replaceSuggestions(ArgumentSuggestions.strings(info -> reloadList().toArray(new String[0]))))
                 .withOptionalArguments(new EntitySelectorArgument.OnePlayer("target"))
@@ -105,7 +105,7 @@ public class BossCMDs {
 
     public static CommandAPICommand Reset(){
         CommandAPICommand cmd = new CommandAPICommand("bossreset")
-                .withPermission("gaster.admin")
+                .withPermission("gaster.boss")
                 .withHelp("/bossreset", "Reinicia el estado de todos los jugadores (teleport a spawn, clear inventory)")
                 .executesPlayer((Player player, CommandArguments args) -> {
                     Bukkit.getOnlinePlayers().forEach(p -> {

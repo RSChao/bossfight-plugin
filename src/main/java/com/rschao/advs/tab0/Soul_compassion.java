@@ -32,6 +32,7 @@ public class Soul_compassion extends BaseAdvancement  {
       if(ev.getItem() == null) return;
       Player p = ev.getPlayer();
       ItemMeta meta = ev.getItem().getItemMeta();
+      if(meta == null) return;
       if(meta.getItemName().equals("Empowered Human Soul")){
         incrementProgression(p);
       }
