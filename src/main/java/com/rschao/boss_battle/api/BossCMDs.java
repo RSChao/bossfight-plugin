@@ -2,10 +2,12 @@ package com.rschao.boss_battle.api;
 
 import com.rschao.Plugin;
 import com.rschao.boss_battle.BossAPI;
+import com.rschao.boss_battle.DropsManager;
 import com.rschao.boss_battle.InvManager;
 import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.ArgumentSuggestions;
 import dev.jorel.commandapi.arguments.EntitySelectorArgument;
+import dev.jorel.commandapi.arguments.ItemStackArgument;
 import dev.jorel.commandapi.arguments.StringArgument;
 import dev.jorel.commandapi.executors.CommandArguments;
 import org.bukkit.Bukkit;
@@ -15,16 +17,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class BossCMDs {
@@ -130,24 +130,22 @@ public class BossCMDs {
                     String rawExclude = (String) args.get("exclude");
                     String[] excluded = rawExclude.split("-");
                     List<String> bossesToExclude = Arrays.stream(excluded).toList();
-                    List<String> bosses = getAllBosses();
-                    List<String> bossesInSuperboss = new ArrayList<>();
+                    List<String> bossesInSuperboss = getStrings(key, bossesToExclude);
+                    List<ItemStack> drops = new ArrayList<>();
+                    for(String boss: bossesInSuperboss){
+                        FileConfiguration config = BossHandler.createNewBoss(boss);
 
-                    for(String boss : bosses){
-                        if(boss.equals(key)) continue;
-                        boolean excludeBoss = false;
-                        for(String exclude: bossesToExclude){
-                            if(boss.contains(exclude)) {
-                                excludeBoss = true;
-                                break;
+                        List<ItemStack> items = DropsManager.loadDropsFromConfig(boss);
+                        for(ItemStack i : items){
+                            if(new Random().nextDouble() < ((double) 1 /items.size())){
+                                drops.add(i);
                             }
                         }
-                        if(excludeBoss) continue;
-                        bossesInSuperboss.add(boss);
+
                     }
                     File f = BossHandler.getBossFile(key);
                     FileConfiguration config = BossHandler.createNewBoss(key);
-
+                    DropsManager.saveDropsToConfig(key, drops);
                     List<Map<String, Object>> phases = getBossPhases(bossesInSuperboss.toArray(new String[0]));
 
                     for(int i = 0; i < phases.size(); i++){
@@ -166,6 +164,24 @@ public class BossCMDs {
         return cmd;
     }
 
+    private static @NotNull List<String> getStrings(String key, List<String> bossesToExclude) {
+        List<String> bosses = getAllBosses();
+        List<String> bossesInSuperboss = new ArrayList<>();
+
+        for(String boss : bosses){
+            if(boss.equals(key)) continue;
+            boolean excludeBoss = false;
+            for(String exclude: bossesToExclude){
+                if(boss.contains(exclude)) {
+                    excludeBoss = true;
+                    break;
+                }
+            }
+            if(excludeBoss) continue;
+            bossesInSuperboss.add(boss);
+        }
+        return bossesInSuperboss;
+    }
 
 
     static List<String> getAllBosses(){

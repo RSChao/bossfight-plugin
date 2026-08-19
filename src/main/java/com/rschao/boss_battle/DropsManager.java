@@ -43,6 +43,14 @@ public class DropsManager {
         saveBossConfig(bossName, config);
     }
 
+    public static void saveDropsToConfig(String bossName, List<ItemStack> drops) {
+        FileConfiguration config = getBossConfig(bossName);
+        if (config == null) return;
+
+        config.set("boss.drops", drops);
+        saveBossConfig(bossName, config);
+    }
+
     public static List<ItemStack> loadDropsFromConfig(String bossName) {
         FileConfiguration config = getBossConfig(bossName);
         if (config == null || !config.contains("boss.drops")) {
@@ -104,10 +112,6 @@ public class DropsManager {
         }
 
         return shulkerBox;
-    }
-
-    public static String getCurrentBossName() {
-        return Plugin.getPlugin(Plugin.class).getConfig().getString("boss.event.name", "unknown");
     }
 }
 
