@@ -1,14 +1,17 @@
 package com.rschao.boss_battle.api;
 
 import com.rschao.boss_battle.BossAPI;
+import com.rschao.enchants.Determined;
 import com.rschao.events.definitions.BossChangeEvent;
 import com.rschao.items.weapons;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Boss;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -23,18 +26,25 @@ import com.rschao.boss_battle.DropsManager;
 public class BossListener implements Listener {
     public static String bossName;
 
-    @EventHandler (priority = org.bukkit.event.EventPriority.HIGHEST)
+    @EventHandler (priority = EventPriority.HIGHEST)
     public void onBossDamage(EntityDamageEvent e){
         if(!(e.getEntity() instanceof Player p)) return;
         if(e.isCancelled()) return;
         BossAPI.findByBoss(p).ifPresent(bi -> {
             if(!bi.isActive()) return;
-            ItemStack item = p.getInventory().getItemInOffHand();
-            if(!item.getType().isAir() && (item.getType().equals(Material.ECHO_SHARD) || item.getType().equals(Material.TOTEM_OF_UNDYING))) return;
-            if(e.getFinalDamage() < p.getHealth()) return;
-            if(bi.containsBoss(p) && bi.getCurrentPhase() < BossHandler.getMaxPhase(bi.getBossConfig())){
-                e.setCancelled(true);
-                bi.advancePhase();
+
+            if (bi.containsBoss(p) && BossAPI.getBossHealth(bi.getBossConfig(), bi.getCurrentPhase()) != null) {
+                Enchantment ench = new Determined().getCustomEnchantment().toBukkitEnchantment();
+                if(ench != null) {
+                    ItemStack item = p.getInventory().getItemInOffHand();
+                    if(item.containsEnchantment(ench)){
+                        if(e.getDamage() > 500){
+                            bi.applyBossDamage(100);
+                        }
+                    }
+                }
+                bi.applyBossDamage(e.getFinalDamage());
+                return;
             }
         });
     }

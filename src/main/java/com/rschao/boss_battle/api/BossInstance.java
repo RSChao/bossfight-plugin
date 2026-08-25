@@ -18,6 +18,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Barrel;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,6 +44,9 @@ public class BossInstance {
     private int currentPhase = 1;
     private boolean active = false;
     private List<ItemStack> rewards = new ArrayList<>();
+    private BossBar bossBar;
+    private double bossHealthCurrent;
+    private double bossHealthMax;
 
     public BossInstance(String key, FileConfiguration config, List<Player> bosses, List<Player> fighters){
         this.key = key;
@@ -75,6 +81,11 @@ public class BossInstance {
     public void removeBoss(Player p) { bosses.remove(p); }
 
     public void end() {
+
+        BossEndEvent ev = new BossEndEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
+        Bukkit.getServer().getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) return;
+
         active = false;
         Location victoryLoc = BossAPI.getVictoryLocation(config);
         if (victoryLoc != null) {
@@ -83,10 +94,7 @@ public class BossInstance {
                 p.teleport(victoryLoc);
             }
         }
-
-        BossEndEvent ev = new BossEndEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
-        Bukkit.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) return;
+        clearBossHealthBar();
 
         // Recompensas básicas tomadas del inventario del boss principal (igual que antes)
         rewards.addAll(Arrays.stream(new ItemStack[0]).toList());
@@ -117,6 +125,14 @@ public class BossInstance {
     }
 
     public void start() {
+        BossStartEvent ev = new BossStartEvent(key, 1, bosses.getFirst(), fighters.toArray(new Player[0]));
+        if(getCurrentPhase() == 1){
+            Bukkit.getServer().getPluginManager().callEvent(ev);
+        }
+        BossChangeEvent event = new BossChangeEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (ev.isCancelled() || event.isCancelled()) return;
+
         active = true;
 
         // Determinar configuración y fase efectivas.
@@ -127,15 +143,9 @@ public class BossInstance {
         Location loc = BossAPI.getLocation(effectiveConfig, effectivePhase);
         if(loc == null) return;
 
-        BossStartEvent ev = new BossStartEvent(key, 1, bosses.getFirst(), fighters.toArray(new Player[0]));
-        if(getCurrentPhase() == 1){
-            Bukkit.getServer().getPluginManager().callEvent(ev);
-        }
-        BossChangeEvent event = new BossChangeEvent(key, getCurrentPhase(), bosses.getFirst(), getFighters().toArray(new Player[0]));
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if (ev.isCancelled() || event.isCancelled()) return;
-
         teleportToLocation(loc);
+
+        setupBossHealthBar();
 
         String kitName = BossAPI.getKit(effectiveConfig, effectivePhase);
         if(kitName != null){
@@ -185,6 +195,7 @@ public class BossInstance {
 
     public void advancePhase() {
         currentPhase++;
+        clearBossHealthBar();
         start();
     }
 
@@ -300,5 +311,43 @@ public class BossInstance {
         }
 
         return currentLevel;
+    }
+
+    private void setupBossHealthBar() {
+        clearBossHealthBar();
+        Integer max = BossAPI.getBossHealth(config, currentPhase);
+        if (max == null || max <= 0) return;
+
+        bossHealthMax = max;
+        bossHealthCurrent = max;
+        bossBar = Bukkit.createBossBar("Boss Health", BarColor.RED, BarStyle.SEGMENTED_6);
+        for (Player boss : bosses) bossBar.addPlayer(boss);
+        bossBar.setProgress(1.0);
+    }
+
+    public void applyBossDamage(double rawDamage) {
+        if (bossBar == null) return;
+
+        double dmg = rawDamage;
+        if (dmg > 1000) dmg -= 100;
+
+        bossHealthCurrent = Math.max(0, bossHealthCurrent - dmg);
+        bossBar.setProgress(Math.max(0, bossHealthCurrent / bossHealthMax));
+
+        if (bossHealthCurrent <= 0) {
+            clearBossHealthBar();
+            if (currentPhase >= BossHandler.getMaxPhase(config)) {
+                end();
+            } else {
+                advancePhase();
+            }
+        }
+    }
+
+    private void clearBossHealthBar() {
+        if (bossBar != null) {
+            bossBar.removeAll();
+            bossBar = null;
+        }
     }
 }
