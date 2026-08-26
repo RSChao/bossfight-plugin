@@ -65,7 +65,7 @@ public class weaponEvents implements Listener{
             if(level<1) level = 1;
             CustomEnchantment enchantment = EnchantmentRegistry.getEnchantment("showdowncore:god_emblem");
             if(enchantment != null && item.containsEnchantment(enchantment.toBukkitEnchantment())) {
-                level = 10;
+                if(level>10) level = 10;
                 isEmblem = true;
             }
             if(p.getInventory().getItemInOffHand().getItemMeta().getPersistentDataContainer().get(weapons.CHKey, PersistentDataType.INTEGER).intValue() > 3*level) return;
