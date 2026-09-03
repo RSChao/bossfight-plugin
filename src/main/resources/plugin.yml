@@ -19,6 +19,7 @@ depend:
   - UltimateAdvancementAPI
   - TechniqueAPI
   - ShowdownCore
+  - PlaceholderAPI
 softdepend:
   - ShowdownSMP
 load: POSTWORLD

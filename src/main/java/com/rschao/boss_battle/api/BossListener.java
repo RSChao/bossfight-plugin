@@ -2,6 +2,7 @@ package com.rschao.boss_battle.api;
 
 import com.rschao.boss_battle.BossAPI;
 import com.rschao.events.definitions.BossChangeEvent;
+import com.rschao.events.definitions.BossStartEvent;
 import com.rschao.items.weapons;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
 import org.bukkit.Bukkit;
@@ -71,5 +72,14 @@ public class BossListener implements Listener {
             DropsManager.saveDropsToConfig(bossName, e.getInventory());
             player.sendMessage("§aBoss drops saved!");
         }
+    }
+
+    @EventHandler
+    void onBossStart(BossStartEvent e) {
+        Bukkit.getLogger().info("BossStartEvent triggered for boss: " + e.getBossName() + ", phase: " + e.getPhase());
+    }
+    @EventHandler
+    void onBossChange(BossChangeEvent e) {
+        Bukkit.getLogger().info("BossChangeEvent triggered for boss: " + e.getBossName() + ", phase: " + e.getPhase());
     }
 }

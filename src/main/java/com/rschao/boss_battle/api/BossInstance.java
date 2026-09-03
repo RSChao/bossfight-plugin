@@ -14,6 +14,7 @@ import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.registry.ScriptRegistry;
 import com.rschao.plugins.techniqueAPI.tech.cooldown.CooldownManager;
 import com.rschao.plugins.techniqueAPI.tech.util.PlayerTechniqueManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -123,7 +124,6 @@ public class BossInstance {
         FileConfiguration effectiveConfig = this.config;
         int effectivePhase = this.currentPhase;
 
-
         Location loc = BossAPI.getLocation(effectiveConfig, effectivePhase);
         if(loc == null) return;
 
@@ -136,6 +136,7 @@ public class BossInstance {
         if (ev.isCancelled() || event.isCancelled()) return;
 
         teleportToLocation(loc);
+        Bukkit.getLogger().severe(BossHandler.getMaxPhase(effectiveConfig) + " is the max phase for boss " + key);
 
         String kitName = BossAPI.getKit(effectiveConfig, effectivePhase);
         if(kitName != null){
@@ -172,10 +173,10 @@ public class BossInstance {
                     }
                     String line = dialogue.get(index);
                     for(Player p: bosses){
-                        p.sendMessage(line);
+                        p.sendMessage(PlaceholderAPI.setPlaceholders(p, line));
                     }
                     for(Player p: fighters){
-                        p.sendMessage(line);
+                        p.sendMessage(PlaceholderAPI.setPlaceholders(p, line));
                     }
                     index++;
                 }
