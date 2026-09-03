@@ -122,4 +122,10 @@ public class BossAPI {
         script.setArgs(drop);
         return script;
     }
+
+    public static Integer getBossHealth(FileConfiguration config, int phase) {
+        ConfigurationSection s = BossHandler.getPhaseData(config, phase);
+        if (s == null || !s.contains("bosshealth")) return null;
+        return s.getInt("bosshealth");
+    }
 }
