@@ -8,7 +8,6 @@ import com.fren_gor.ultimateAdvancementAPI.util.AdvancementKey;
 import com.fren_gor.ultimateAdvancementAPI.visibilities.HiddenVisibility;
 import com.rschao.advs.AdvancementTabNamespaces;
 import com.rschao.events.definitions.BossEndEvent;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
