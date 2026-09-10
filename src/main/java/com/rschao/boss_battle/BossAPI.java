@@ -32,6 +32,12 @@ public class BossAPI {
         return s.getString("kit");
     }
 
+    public static String getBossName(FileConfiguration config, int phase){
+        ConfigurationSection s = BossHandler.getPhaseData(config, phase);
+        if(s == null || !s.contains("bossname")) return "Boss Health";
+        return s.getString("bossname");
+    }
+
     public static Location getLocation(FileConfiguration config, int phase){
         ConfigurationSection s = BossHandler.getPhaseData(config, phase);
         if(s == null || !s.contains("x") || !s.contains("y") || !s.contains("z") || !s.contains("name")) return null;
