@@ -321,7 +321,7 @@ public class BossInstance {
 
         bossHealthMax = max;
         bossHealthCurrent = max;
-        String bossName = BossAPI.getBossName(config, currentPhase);
+        String bossName = PlaceholderAPI.setPlaceholders(bosses.get(0), BossAPI.getBossName(config, currentPhase));
         bossBar = Bukkit.createBossBar(bossName, BarColor.RED, BarStyle.SEGMENTED_6);
         for (Player boss : bosses) bossBar.addPlayer(boss);
         bossBar.setProgress(1.0);
