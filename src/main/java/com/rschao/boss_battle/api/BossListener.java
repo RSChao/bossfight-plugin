@@ -27,7 +27,7 @@ import com.rschao.boss_battle.DropsManager;
 public class BossListener implements Listener {
     public static String bossName;
 
-    @EventHandler (priority = EventPriority.HIGHEST)
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onBossDamage(EntityDamageEvent e){
         if(!(e.getEntity() instanceof Player p)) return;
         if(e.isCancelled()) return;
@@ -45,7 +45,6 @@ public class BossListener implements Listener {
                     }
                 }
                 bi.applyBossDamage(e.getFinalDamage());
-                return;
             }
         });
     }

@@ -121,7 +121,7 @@ public class BossAPI {
                 if(keep.stream().anyMatch(s -> dropped.getType().name().contains(s))){
                     continue;
                 }
-                drops.remove(drop);
+                drops.remove(dropped);
             }
             return drops;
         });
@@ -132,6 +132,7 @@ public class BossAPI {
     public static Integer getBossHealth(FileConfiguration config, int phase) {
         ConfigurationSection s = BossHandler.getPhaseData(config, phase);
         if (s == null || !s.contains("bosshealth")) return null;
+        Bukkit.getLogger().severe("Boss health for phase " + phase + " is: " + s.getInt("bosshealth"));
         return s.getInt("bosshealth");
     }
 }

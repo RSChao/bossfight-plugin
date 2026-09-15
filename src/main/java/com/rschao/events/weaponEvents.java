@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.rschao.boss_battle.BossAPI;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.CustomEnchantment;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.registry.EnchantmentRegistry;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
@@ -74,7 +75,15 @@ public class weaponEvents implements Listener{
                 int odds = 70;
                 Random random = new Random();
                 int i = random.nextInt(100);
-                if (i > odds) {
+                BossAPI.findByBoss(p).ifPresent(bi -> {
+                    if(bi.isActive()){
+                        if(bi.containsBoss(p) && BossAPI.getBossHealth(bi.getBossConfig(), bi.getCurrentPhase()) != null) {
+                            if(bi.getCurrentBossHealth() <= (ev.getDamage() >= 100 ? 100: ev.getDamage())) return;
+                            ev.setCancelled(true);
+                        }
+                    }
+                });
+                if (i > odds && !ev.isCancelled()) {
                     Bukkit.getLogger().info("Shattering emblem for " + p.getName() + " with " + t + " uses.");
                     Bukkit.getLogger().info("Odds were " + odds + "%, rolled " + i);
                     ev.setCancelled(false);
@@ -93,15 +102,6 @@ public class weaponEvents implements Listener{
             if(t >=3*level && !isEmblem){
                 item.setAmount(0);
                 return;
-            }
-            else if (t >=3*level && isEmblem){
-                int odds = 70;
-                Random random = new Random();
-                int i = random.nextInt(100);
-                if (i > odds) {
-                    ev.setCancelled(false);
-                    p.ban("Your god emblem has shattered due to overuse.", Duration.of(1, ChronoUnit.SECONDS), "Divine Emblem Shatter");
-                }
             }
             ItemMeta meta = item.getItemMeta();
             List<String> list = new ArrayList<String>();
