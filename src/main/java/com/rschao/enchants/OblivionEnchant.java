@@ -4,9 +4,6 @@ import com.rschao.events.definitions.ItemOblivionEvent;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.CustomEnchantment;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.definition.EasyEnchant;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.util.ColorCodes;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.nbt.api.BinaryTagHolder;
-import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -22,7 +19,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
 import java.util.Random;
 
 public class OblivionEnchant extends EasyEnchant {
@@ -85,21 +81,16 @@ public class OblivionEnchant extends EasyEnchant {
     }
 
     static boolean GetBlackListItem(ItemStack item){
-        boolean bool = false;
-        if(item == null) return bool;
-        if(item.getItemMeta() == null) return bool;
+        if(item == null) return false;
+        if(item.getItemMeta() == null) return false;
         if(!item.getType().equals(Material.COOKIE)) return true;
-        if(!item.getItemMeta().getPersistentDataContainer().isEmpty()) return bool;
-        if(!item.getEnchantments().isEmpty()) return bool;
-        switch (item.getType()) {
+        if(!item.getItemMeta().getPersistentDataContainer().isEmpty()) return false;
+        if(!item.getEnchantments().isEmpty()) return false;
+        return switch (item.getType()) {
             case NETHERITE_SWORD, NETHERITE_HELMET, NETHERITE_BOOTS, WILD_ARMOR_TRIM_SMITHING_TEMPLATE, NAUTILUS_SHELL,
                  TURTLE_SCUTE, LEATHER, NETHERITE_LEGGINGS, NETHERITE_CHESTPLATE, DIAMOND_SWORD, HEART_OF_THE_SEA,
-                 NETHER_STAR, SHIELD, ECHO_SHARD, ELYTRA, BLAZE_POWDER, COOKIE:
-                break;
-            default:
-                bool = true;
-                break;
-        }
-        return bool;
+                 NETHER_STAR, SHIELD, ECHO_SHARD, ELYTRA, BLAZE_POWDER-> false;
+            default -> true;
+        };
     }
 }
