@@ -88,6 +88,7 @@ public class OblivionEnchant extends EasyEnchant {
         boolean bool = false;
         if(item == null) return bool;
         if(item.getItemMeta() == null) return bool;
+        if(!item.getType().equals(Material.COOKIE)) return true;
         if(!item.getItemMeta().getPersistentDataContainer().isEmpty()) return bool;
         if(!item.getEnchantments().isEmpty()) return bool;
         switch (item.getType()) {
