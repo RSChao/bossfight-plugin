@@ -22,4 +22,5 @@ depend:
   - PlaceholderAPI
 softdepend:
   - ShowdownSMP
+  - Multiverse-Core
 load: POSTWORLD

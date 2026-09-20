@@ -83,13 +83,12 @@ public class OblivionEnchant extends EasyEnchant {
     static boolean GetBlackListItem(ItemStack item){
         if(item == null) return false;
         if(item.getItemMeta() == null) return false;
-        if(!item.getType().equals(Material.COOKIE)) return true;
         if(!item.getItemMeta().getPersistentDataContainer().isEmpty()) return false;
         if(!item.getEnchantments().isEmpty()) return false;
         return switch (item.getType()) {
             case NETHERITE_SWORD, NETHERITE_HELMET, NETHERITE_BOOTS, WILD_ARMOR_TRIM_SMITHING_TEMPLATE, NAUTILUS_SHELL,
                  TURTLE_SCUTE, LEATHER, NETHERITE_LEGGINGS, NETHERITE_CHESTPLATE, DIAMOND_SWORD, HEART_OF_THE_SEA,
-                 NETHER_STAR, SHIELD, ECHO_SHARD, ELYTRA, BLAZE_POWDER-> false;
+                 NETHER_STAR, SHIELD, ECHO_SHARD, ELYTRA, BLAZE_POWDER -> false;
             default -> true;
         };
     }
