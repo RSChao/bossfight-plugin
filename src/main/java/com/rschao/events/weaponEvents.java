@@ -2,11 +2,12 @@ package com.rschao.events;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.rschao.Plugin;
 import com.rschao.boss_battle.BossAPI;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.CustomEnchantment;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.registry.EnchantmentRegistry;
@@ -21,7 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -86,8 +86,19 @@ public class weaponEvents implements Listener{
                 if (i > odds && !ev.isCancelled()) {
                     Bukkit.getLogger().info("Shattering emblem for " + p.getName() + " with " + t + " uses.");
                     Bukkit.getLogger().info("Odds were " + odds + "%, rolled " + i);
+                    AtomicBoolean isBoss = new AtomicBoolean(false);
+                    BossAPI.findByBoss(p).ifPresent(bi -> {
+                        if(bi.isActive()){
+                            if(bi.containsBoss(p)) {
+                                ev.setCancelled(true);
+                                bi.advancePhase();
+                                isBoss.set(true);
+                            }
+                        }
+                    });
+                    if(isBoss.get()) return;
                     ev.setCancelled(false);
-                    p.ban("Your god emblem has shattered due to overuse.", Duration.of(1, ChronoUnit.HOURS), "Divine Emblem Shatter");
+                    Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(Plugin.class), () -> p.ban("Your god emblem has shattered due to overuse.", Duration.of(1, ChronoUnit.HOURS), "Divine Emblem Shatter"), 1L);
                     return;
                 }
             }
