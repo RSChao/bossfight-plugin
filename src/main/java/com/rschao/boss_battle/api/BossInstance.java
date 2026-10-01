@@ -321,7 +321,7 @@ public class BossInstance {
 
         bossHealthMax = max;
         bossHealthCurrent = max;
-        String bossName = PlaceholderAPI.setPlaceholders(bosses.get(0), BossAPI.getBossName(config, currentPhase));
+        String bossName = PlaceholderAPI.setPlaceholders(bosses.getFirst(), BossAPI.getBossName(config, currentPhase));
         bossBar = Bukkit.createBossBar(bossName, BarColor.RED, BarStyle.SEGMENTED_6);
         bossBar.setProgress(1.0);
         for (Player boss : bosses) bossBar.addPlayer(boss);
@@ -336,7 +336,7 @@ public class BossInstance {
         if (dmg > 100) dmg = 100;
         bossHealthCurrent = Math.max(0, bossHealthCurrent - dmg);
         bossBar.setProgress(Math.max(0, bossHealthCurrent / bossHealthMax));
-        if(bossHealthCurrent%100==0){
+        if(bossHealthCurrent%100==0 || dmg >= 100) {
             for(Player p : bosses) {
                 p.sendMessage("§cBoss health: " + (int)bossHealthCurrent + "/" + (int)bossHealthMax);
             }

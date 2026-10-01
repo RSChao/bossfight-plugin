@@ -88,8 +88,11 @@ public class weaponEvents implements Listener{
                     Bukkit.getLogger().info("Odds were " + odds + "%, rolled " + i);
                     AtomicBoolean isBoss = new AtomicBoolean(false);
                     BossAPI.findByBoss(p).ifPresent(bi -> {
+                        Bukkit.getLogger().info("Found boss instance for " + p.getName() + " with " + bi.getBosses().size() + " bosses.");
                         if(bi.isActive()){
+                            Bukkit.getLogger().info("boss instance for " + p.getName() + " id active.");
                             if(bi.containsBoss(p)) {
+                                Bukkit.getLogger().info("fuck me, " + p.getName() + " is a boss, advancing phase.");
                                 ev.setCancelled(true);
                                 bi.advancePhase();
                                 isBoss.set(true);
