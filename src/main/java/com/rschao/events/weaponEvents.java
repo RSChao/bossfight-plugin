@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.rschao.Plugin;
 import com.rschao.boss_battle.BossAPI;
+import com.rschao.boss_battle.api.BossHandler;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.CustomEnchantment;
 import com.rschao.plugins.showdowncore.showdownCore.api.enchantment.registry.EnchantmentRegistry;
 import com.rschao.plugins.showdowncore.showdownCore.api.runnables.ShowdownScript;
@@ -77,7 +78,7 @@ public class weaponEvents implements Listener{
                 int i = random.nextInt(100);
                 BossAPI.findByBoss(p).ifPresent(bi -> {
                     if(bi.isActive()){
-                        if(bi.containsBoss(p) && BossAPI.getBossHealth(bi.getBossConfig(), bi.getCurrentPhase()) != null) {
+                        if(bi.containsBoss(p) && BossAPI.getBossHealth(bi.getBossConfig(), bi.getCurrentPhase()) != null && BossAPI.getBossHealth(bi.getBossConfig(), bi.getCurrentPhase()) != 0) {
                             if(bi.getCurrentBossHealth() <= (ev.getDamage() >= 100 ? 100: ev.getDamage())) return;
                             ev.setCancelled(true);
                         }
@@ -87,19 +88,31 @@ public class weaponEvents implements Listener{
                     Bukkit.getLogger().info("Shattering emblem for " + p.getName() + " with " + t + " uses.");
                     Bukkit.getLogger().info("Odds were " + odds + "%, rolled " + i);
                     AtomicBoolean isBoss = new AtomicBoolean(false);
+                    AtomicBoolean isLastPhase = new AtomicBoolean(false);
                     BossAPI.findByBoss(p).ifPresent(bi -> {
                         Bukkit.getLogger().info("Found boss instance for " + p.getName() + " with " + bi.getBosses().size() + " bosses.");
                         if(bi.isActive()){
                             Bukkit.getLogger().info("boss instance for " + p.getName() + " id active.");
+                            isBoss.set(true);
                             if(bi.containsBoss(p)) {
                                 Bukkit.getLogger().info("fuck me, " + p.getName() + " is a boss, advancing phase.");
                                 ev.setCancelled(true);
-                                bi.advancePhase();
-                                isBoss.set(true);
+                                if(bi.getCurrentPhase() >= BossHandler.getMaxPhase(bi.getBossConfig())) {
+                                    isLastPhase.set(true);
+                                }
+                                else {
+                                    bi.advancePhase();
+                                }
                             }
                         }
                     });
-                    if(isBoss.get()) return;
+                    if(isBoss.get()) {
+                        if(isLastPhase.get()) {
+                            ev.setCancelled(true);
+                            p.sendMessage("You have defeated the boss, but your emblem has shattered due to overuse.");
+                            return;
+                        }
+                    }
                     ev.setCancelled(false);
                     Bukkit.getScheduler().runTaskLater(Plugin.getPlugin(Plugin.class), () -> p.ban("Your god emblem has shattered due to overuse.", Duration.of(1, ChronoUnit.HOURS), "Divine Emblem Shatter"), 1L);
                     return;
